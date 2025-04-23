@@ -61,7 +61,7 @@
                                         <th>Flag</th>
                                         <th>NALOK</th>
                                         <th>Tahun</th>
-                                        <th>Notifikasi </th>
+                                        <th>Notifikasi</th>
                                         <th>Stock Opname ({{ request('smt') ? $listBulan->firstWhere('value', request('smt'))['label'] ?? request('smt') : '' }})</th>
                                         <th>BA Stok Fisik ({{ request('smt') ? $listBulan->firstWhere('value', request('smt'))['label'] ?? request('smt') : '' }})</th>
                                         <th>Rekon BKU Selesai</th>
@@ -84,21 +84,29 @@
                                             </td>
                                             <td>{{ $item->nalok ?? 'No Nalok Found' }}</td>
                                             <td>{{ $item->tahun ?? 'No Year Found' }}</td>
-                                            <td>{{ $totalSPPB ?? 'No SPPB Found' }}</td>
+                                            <td>
+                                                @if (!empty($item->master) && is_iterable($item->master))
+                                                    @foreach ($item->master as $detail)
+                                                        <span class="badge badge-info">{{ $detail->Total_SPPB_BAST ?? 0 }}</span>
+                                                    @endforeach
+                                                @else
+                                                    <span class="badge badge-secondary" style="color: black">No Data</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 {{ $item->periode_baso ?? 'No SO Found' }}
                                                 @if ($item->periode_baso === 'No Data Found' || is_null($item->periode_baso))
-                                                    Belum
+                                                    <span class="badge badge-danger">Belum</span>
                                                 @else
-                                                    Sudah
+                                                    <span class="badge badge-success">Sudah</span>
                                                 @endif
                                             </td>
                                             <td>
                                                 {{ $item->tglba_fisik ?? 'No BASO Found' }}
                                                 @if ($item->tglba_fisik === 'No Data Found' || is_null($item->tglba_fisik))
-                                                    Belum
+                                                    <span class="badge badge-danger">Belum</span>
                                                 @else
-                                                    Sudah
+                                                    <span class="badge badge-success">Sudah</span>
                                                 @endif
                                             </td>
                                             <td></td>

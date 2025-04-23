@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotifikasiController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,5 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('datatable-data', [App\Http\Controllers\HomeController::class, 'getData'])->name('datatable.data');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('datatable-data', [HomeController::class, 'getData'])->name('datatable.data');
+
+Route::get('notifikasi', [NotifikasiController::class, 'show'])->name('notifikasi');

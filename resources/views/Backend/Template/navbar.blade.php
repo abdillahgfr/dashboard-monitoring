@@ -35,7 +35,7 @@
                 <ul class="list-unstyled mb-2">
                     <li class="divider"></li>
                     <li>
-                        <a role="menuitem" tabindex="-1" href="pages-signin.html"><i class="bx bx-power-off"></i>
+                        <a role="menuitem" tabindex="-1" href=""><i class="bx bx-power-off"></i>
                             Logout</a>
                     </li>
                 </ul>
@@ -52,7 +52,7 @@
 
     <div class="sidebar-header">
         <div class="sidebar-title">
-            Navigation
+            MENU
         </div>
         <div class="sidebar-toggle d-none d-md-block" data-toggle-class="sidebar-left-collapsed" data-target="html"
             data-fire-event="sidebar-left-toggle">
@@ -63,19 +63,25 @@
     <div class="nano">
         <div class="nano-content">
             <nav id="menu" class="nav-main" role="navigation">
-
                 <ul class="nav nav-main">
-                    <li>
-                        <a class="nav-link" href="{{ route('home') }}">
-                            <i class="bx bx-home-alt" aria-hidden="true"></i>
-                            <span>Dashboard</span>
+                    <li class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">
+                        <a class="nav-link {{ request()->routeIs('home') ? 'nav-link-active' : '' }}"
+                            href="{{ route('home') }}">
+                            <i class="bx bx-cube" aria-hidden="true"></i>
+                            <span>Persediaan</span>
+                        </a>
+                    </li>
+                    <li class="{{ request()->is('notifikasi') ? 'nav-active' : '' }}">
+                        <a class="nav-link {{ request()->is('notifikasi') ? 'nav-link-active' : '' }}"
+                            href="/notifikasi">
+                            <i class="bx bx-file" aria-hidden="true"></i>
+                            <span>Notifikasi</span>
                         </a>
                     </li>
                 </ul>
             </nav>
             <hr class="separator" />
         </div>
-
         <script>
             // Maintain Scroll Position
             if (typeof localStorage !== 'undefined') {
@@ -87,8 +93,6 @@
                 }
             }
         </script>
-
     </div>
-
 </aside>
 <!-- end: sidebar -->
