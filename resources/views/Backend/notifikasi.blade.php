@@ -17,25 +17,16 @@
                                 <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
                             </div>
 
-                            <h2 class="card-title">LAPORAN SISTEM PERSEDIAAN</h2>
+                            <h2 class="card-title">Laporan Sistem Persediaan - {{ now()->year }}</h2>
                         </header>
                         <div class="card-body">
-                            <form method="GET" action="{{ url('/') }}">
+                            {{-- <form method="GET" action="{{ url('/notifikasi') }}">
                                 <div class="form-group">
                                     <select name="tahun" class="form-control">
                                         <option value="">Pilih Tahun</option>
                                         @foreach ($tahunList as $year)
                                             <option value="{{ $year }}"
                                                 {{ request('tahun') == $year ? 'selected' : '' }}>{{ $year }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-
-                                    <select name="flag" class="form-control mt-2">
-                                        <option value="">Pilih Flag</option>
-                                        @foreach ($mergedData->unique('flag') as $item)
-                                            <option value="{{ $item->flag }}"
-                                                {{ request('flag') == $item->flag ? 'selected' : '' }}>{{ $item->flag }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -51,9 +42,9 @@
                                     </select>
                                    
                                     <button type="submit" class="btn btn-primary mt-2">Filter</button>
-                                    <a href="{{ url('/') }}" class="btn btn-secondary mt-2">Clear</a>
+                                    <a href="{{ url('/notifikasi') }}" class="btn btn-secondary mt-2">Clear</a>
                                 </div>
-                            </form>
+                            </form> --}}
                             <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools">
                                 <thead>
                                     <tr>
@@ -62,8 +53,8 @@
                                         <th>NALOK</th>
                                         <th>Tahun</th>
                                         <th>Notifikasi</th>
-                                        <th>Stock Opname ({{ request('smt') ? $listBulan->firstWhere('value', request('smt'))['label'] ?? request('smt') : '' }})</th>
-                                        <th>BA Stok Fisik ({{ request('smt') ? $listBulan->firstWhere('value', request('smt'))['label'] ?? request('smt') : '' }})</th>
+                                        <th>Stok Opname</th>
+                                        <th>BA Stok Fisik</th>
                                         <th>No BA Fisik</th>
                                         <th>Rekon BKU Selesai</th>
                                         <th>Status</th>
@@ -86,13 +77,7 @@
                                             <td>{{ $item->nalok ?? 'No Nalok Found' }}</td>
                                             <td>{{ $item->tahun ?? 'No Year Found' }}</td>
                                             <td>
-                                                @if (!empty($item->master) && is_iterable($item->master))
-                                                    @foreach ($item->master as $detail)
-                                                        <span class="badge badge-info">{{ $detail->Total_SPPB_BAST ?? 0 }}</span>
-                                                    @endforeach
-                                                @else
-                                                    <span class="badge badge-secondary" style="color: black">No Data</span>
-                                                @endif
+                                                {{ $item->Total_SPPB_BAST ?? '0' }}
                                             </td>
                                             <td>
                                                 {{ $item->periode_baso ?? 'No SO Found' }}
@@ -113,7 +98,7 @@
                                             <td>{{ $item->no_bafisik ?? 'No BA Fisik Found' }}</td>
                                             <td></td>
                                             <td>
-                                                @if ($item->tglba_fisik === 'No Data Found' || $item->periode_baso === 'No Data Found')
+                                                @if ($item->Total_SPPB_BAST > 0 || $item->tglba_fisik === 'No Data Found' || $item->periode_baso === 'No Data Found')
                                                     <span class="badge badge-danger">Belum</span>
                                                 @else
                                                     <span class="badge badge-success">Sudah</span>

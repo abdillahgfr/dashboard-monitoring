@@ -1,15 +1,13 @@
 <!-- start: header -->
 <header class="header">
     <div class="logo-container">
-        <a href="{{ route('home') }}" class="logo">
-            <img src="img/EPersediaan.png" width="155" height="25" alt="Monitoring Admin" />
+        <a href="/notifikasi" class="logo">
+            <h1 style="margin-top: 0px">EPersediaan</h1>
         </a>
-
         <div class="d-md-none toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html"
             data-fire-event="sidebar-left-opened">
             <i class="fas fa-bars" aria-label="Toggle sidebar"></i>
         </div>
-
     </div>
 
     <!-- start: search & user box -->
@@ -35,7 +33,7 @@
                 <ul class="list-unstyled mb-2">
                     <li class="divider"></li>
                     <li>
-                        <a role="menuitem" tabindex="-1" href=""><i class="bx bx-power-off"></i>
+                        <a role="menuitem" tabindex="-1" href="{{ route('login') }}"><i class="bx bx-power-off"></i>
                             Logout</a>
                     </li>
                 </ul>
@@ -64,18 +62,18 @@
         <div class="nano-content">
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
-                    <li class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">
+                    {{-- <li class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">
                         <a class="nav-link {{ request()->routeIs('home') ? 'nav-link-active' : '' }}"
                             href="{{ route('home') }}">
                             <i class="bx bx-cube" aria-hidden="true"></i>
                             <span>Persediaan</span>
                         </a>
-                    </li>
+                    </li> --}}
                     <li class="{{ request()->is('notifikasi') ? 'nav-active' : '' }}">
                         <a class="nav-link {{ request()->is('notifikasi') ? 'nav-link-active' : '' }}"
                             href="/notifikasi">
                             <i class="bx bx-file" aria-hidden="true"></i>
-                            <span>Notifikasi</span>
+                            <span>Persediaan</span>
                         </a>
                     </li>
                 </ul>

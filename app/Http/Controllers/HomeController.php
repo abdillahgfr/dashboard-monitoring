@@ -99,9 +99,25 @@ class HomeController extends Controller
             });
         }
 
-        // Extract unique smt values for the dropdown
+        // Extract unique smt values for the dropdown and map them to month names
         $smtList = $bpadinventoryData->pluck('smt')->unique()->filter(function ($smt) {
             return $smt !== 'No Data Found'; // Exclude 'No Data Found' from the list
+        })->map(function ($smt) {
+            $monthMapping = [
+            '1' => 'Januari',
+            '2' => 'Februari',
+            '3' => 'Maret',
+            '4' => 'April',
+            '5' => 'Mei',
+            '6' => 'Juni',
+            '7' => 'Juli',
+            '8' => 'Agustus',
+            '9' => 'September',
+            '10' => 'Oktober',
+            '11' => 'November',
+            '12' => 'Desember',
+            ];
+            return $monthMapping[$smt] ?? $smt; // Map smt to month name or return smt if not found
         })->values();
 
         // Retrieve master data from sqlsrv
@@ -310,7 +326,7 @@ class HomeController extends Controller
         
 
         // Pass the data and list of years to the view
-        return view('Backend.home', compact('mergedData', 'tahunList', 'flagList', 'listBulan', 'master'));
+        return view('Backend.home', compact('mergedData', 'tahunList', 'flagList', 'listBulan','smtList', 'master'));
     }
     
 
@@ -521,5 +537,10 @@ class HomeController extends Controller
         });
         
         return view('Backend.home', ['master' => $master]);
+    }
+
+    public function notFound()
+    {
+        return view('Backend.notfound');
     }
 }

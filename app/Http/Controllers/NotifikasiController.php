@@ -11,12 +11,54 @@ class NotifikasiController extends Controller
     public function show(Request $request)
     {
         // Retrieve master data from sqlsrv
-        $master = DB::connection('sqlsrv')
-            ->table('master_profile_detail')
-            ->where('sts', '1')
-            ->where('tahun', '2025')
-            ->select('kolok', 'nalok')
+        $bpadmasterData = DB::connection('sqlsrv')->table('master_profile')
+            ->join('master_profile_detail', 'master_profile.id_kolok', '=', 'master_profile_detail.id_kolok')
+            ->where('master_profile_detail.tahun', '2025') // Filter data for the year 2025
+            ->where('master_profile_detail.sts', '1')
+            ->select('master_profile.id_kolok', 'master_profile.nalok', 'master_profile_detail.tahun', 'master_profile_detail.upb_sekolah', 'master_profile_detail.flag_blud')
             ->get();
+
+        // Query from the second database
+        $currentYear = $tahun ?? date('Y'); // Use the selected year or default to the current year
+        $previousYear = $currentYear - 1; // Calculate the previous year
+
+        // Add current year and previous year to the view
+        $tahunList = collect([$currentYear, $previousYear]);
+        
+        // Generate a list of months from January to December with rules for formatting
+        $listBulan = collect([
+            '01' => 'Januari',
+            '02' => 'Februari',
+            '03' => 'Maret',
+            '04' => 'April',
+            '05' => 'Mei',
+            '06' => 'Juni',
+            '07' => 'Juli',
+            '08' => 'Agustus',
+            '09' => 'September',
+            '10' => 'Oktober',
+            '11' => 'November',
+            '12' => 'Desember',
+        ]);
+        $currentMonth = $request->get('smt') ? array_search($request->get('smt'), $listBulan->toArray()) : date('m'); // Retrieve the 'smt' filter from the request or default to the current month
+        
+        $bpadinventoryData = DB::connection('sqlsrv_2')->table('so_data2025')
+            ->whereYear('periode_baso', $currentYear) // Filter by the selected year
+            ->whereMonth('periode_baso', '03') // Filter by the selected or current month
+            ->select('kolok', 'smt', 'periode_baso', 'tglba_fisik', 'no_bafisik')
+            ->get();
+
+        // Merge data from both databases and include 'periode_baso', 'tglba_fisik', and 'TotalSPPB'
+        $mergedData = $bpadmasterData->map(function ($master) use ($bpadinventoryData) {
+            $inventory = $bpadinventoryData->firstWhere('kolok', $master->id_kolok);
+    
+                $master->smt = $inventory->smt ?? 'No Data Found';
+                $master->periode_baso = $inventory->periode_baso ?? 'No Data Found';
+                $master->tglba_fisik = $inventory->tglba_fisik ?? 'No Data Found';
+                $master->no_bafisik = $inventory->no_bafisik ?? 'No Data Found';
+    
+                return $master;
+            });
 
         // Helper function for fetching SPPB data from rq_data2025
         $getSPPBData = function ($connection, $columnAlias, $filter) {
@@ -175,32 +217,32 @@ class NotifikasiController extends Controller
 
 
         // Merge data into master
-        $master = $master->map(function ($item) use ($sppb1, $sppb2, $sppb3, $sppb4, $bastSPPB1, $bastSPPB2, $bastSPPB3, $bastSPPB4, $bastPHK3, $bastHIBAH, $bastTRANSFER, $reviewTambah, $instTambah, $auditTambah, $smt1Tambah, $smt2Tambah, $reviewKurang, $insKurang, $auditKurang, $smt1Kurang, $smt2Kurang) {
-            $item->SPPB1 = optional($sppb1->firstWhere('idskpd', $item->kolok))->SPPB1 ?? 0;
-            $item->SPPB2 = optional($sppb2->firstWhere('idskpd', $item->kolok))->SPPB2 ?? 0;
-            $item->SPPB3 = optional($sppb3->firstWhere('idskpd', $item->kolok))->SPPB3 ?? 0;
-            $item->SPPB4 = optional($sppb4->firstWhere('idskpd', $item->kolok))->SPPB4 ?? 0;
+        $mergedData = $mergedData->map(function ($item) use ($sppb1, $sppb2, $sppb3, $sppb4, $bastSPPB1, $bastSPPB2, $bastSPPB3, $bastSPPB4, $bastPHK3, $bastHIBAH, $bastTRANSFER, $reviewTambah, $instTambah, $auditTambah, $smt1Tambah, $smt2Tambah, $reviewKurang, $insKurang, $auditKurang, $smt1Kurang, $smt2Kurang) {
+            $item->SPPB1 = optional($sppb1->firstWhere('idskpd', $item->id_kolok))->SPPB1 ?? 0;
+            $item->SPPB2 = optional($sppb2->firstWhere('idskpd', $item->id_kolok))->SPPB2 ?? 0;
+            $item->SPPB3 = optional($sppb3->firstWhere('idskpd', $item->id_kolok))->SPPB3 ?? 0;
+            $item->SPPB4 = optional($sppb4->firstWhere('idskpd', $item->id_kolok))->SPPB4 ?? 0;
         
-            $item->BASTSPPB1 = optional($bastSPPB1->firstWhere('idskpd', $item->kolok))->BASTSPPB1 ?? 0;
-            $item->BASTSPPB2 = optional($bastSPPB2->firstWhere('idskpd', $item->kolok))->BASTSPPB2 ?? 0;
-            $item->BASTSPPB3 = optional($bastSPPB3->firstWhere('idskpd', $item->kolok))->BASTSPPB3 ?? 0;
-            $item->BASTSPPB4 = optional($bastSPPB4->firstWhere('idskpd', $item->kolok))->BASTSPPB4 ?? 0;
+            $item->BASTSPPB1 = optional($bastSPPB1->firstWhere('idskpd', $item->id_kolok))->BASTSPPB1 ?? 0;
+            $item->BASTSPPB2 = optional($bastSPPB2->firstWhere('idskpd', $item->id_kolok))->BASTSPPB2 ?? 0;
+            $item->BASTSPPB3 = optional($bastSPPB3->firstWhere('idskpd', $item->id_kolok))->BASTSPPB3 ?? 0;
+            $item->BASTSPPB4 = optional($bastSPPB4->firstWhere('idskpd', $item->id_kolok))->BASTSPPB4 ?? 0;
         
-            $item->BASTPHK3 = optional($bastPHK3->firstWhere('kolok', $item->kolok))->BASTPHK3 ?? 0;
-            $item->BASTHIBAH = optional($bastHIBAH->firstWhere('kolok', $item->kolok))->BASTHIBAH ?? 0;
-            $item->BASTTRANSFER = optional($bastTRANSFER->firstWhere('idkolok', $item->kolok))->BASTTRANSFER ?? 0;
+            $item->BASTPHK3 = optional($bastPHK3->firstWhere('kolok', $item->id_kolok))->BASTPHK3 ?? 0;
+            $item->BASTHIBAH = optional($bastHIBAH->firstWhere('kolok', $item->id_kolok))->BASTHIBAH ?? 0;
+            $item->BASTTRANSFER = optional($bastTRANSFER->firstWhere('idkolok', $item->id_kolok))->BASTTRANSFER ?? 0;
         
-            $item->REVIEWTAMBAH = optional($reviewTambah->firstWhere('kolok', $item->kolok))->REVIEWTAMBAH ?? 0;
-            $item->INSTAMBAH = optional($instTambah->firstWhere('kolok', $item->kolok))->INSTAMBAH ?? 0;
-            $item->AUDITTAMBAH = optional($auditTambah->firstWhere('kolok', $item->kolok))->AUDITTAMBAH ?? 0;
-            $item->SMT1TAMBAH = optional($smt1Tambah->firstWhere('kolok', $item->kolok))->SMT1TAMBAH ?? 0;
-            $item->SMT2TAMBAH = optional($smt2Tambah->firstWhere('kolok', $item->kolok))->SMT2TAMBAH ?? 0;
+            $item->REVIEWTAMBAH = optional($reviewTambah->firstWhere('kolok', $item->id_kolok))->REVIEWTAMBAH ?? 0;
+            $item->INSTAMBAH = optional($instTambah->firstWhere('kolok', $item->id_kolok))->INSTAMBAH ?? 0;
+            $item->AUDITTAMBAH = optional($auditTambah->firstWhere('kolok', $item->id_kolok))->AUDITTAMBAH ?? 0;
+            $item->SMT1TAMBAH = optional($smt1Tambah->firstWhere('kolok', $item->id_kolok))->SMT1TAMBAH ?? 0;
+            $item->SMT2TAMBAH = optional($smt2Tambah->firstWhere('kolok', $item->id_kolok))->SMT2TAMBAH ?? 0;
         
-            $item->REVIEWKURANG = optional($reviewKurang->firstWhere('idkolok', $item->kolok))->REVIEWKURANG ?? 0;
-            $item->INSKURANG = optional($insKurang->firstWhere('idkolok', $item->kolok))->INSKURANG ?? 0;
-            $item->AUDITKURANG = optional($auditKurang->firstWhere('idkolok', $item->kolok))->AUDITKURANG ?? 0;
-            $item->SMT1KURANG = optional($smt1Kurang->firstWhere('idkolok', $item->kolok))->SMT1KURANG ?? 0;
-            $item->SMT2KURANG = optional($smt2Kurang->firstWhere('idkolok', $item->kolok))->SMT2KURANG ?? 0;
+            $item->REVIEWKURANG = optional($reviewKurang->firstWhere('idkolok', $item->id_kolok))->REVIEWKURANG ?? 0;
+            $item->INSKURANG = optional($insKurang->firstWhere('idkolok', $item->id_kolok))->INSKURANG ?? 0;
+            $item->AUDITKURANG = optional($auditKurang->firstWhere('idkolok', $item->id_kolok))->AUDITKURANG ?? 0;
+            $item->SMT1KURANG = optional($smt1Kurang->firstWhere('idkolok', $item->id_kolok))->SMT1KURANG ?? 0;
+            $item->SMT2KURANG = optional($smt2Kurang->firstWhere('idkolok', $item->id_kolok))->SMT2KURANG ?? 0;
         
             // Menambahkan total dari semua data
             $item->Total_SPPB_BAST = $item->SPPB1 + $item->SPPB2 + $item->SPPB3 + $item->SPPB4 +
@@ -214,6 +256,11 @@ class NotifikasiController extends Controller
             return $item;
         });
         
-        return view('notifikasi', ['master' => $master]);
+        return view('Backend.notifikasi', [
+            'mergedData' => $mergedData,
+            'tahunList' => $tahunList,
+            'listBulan' => $listBulan
+        ]);
     }
+
 }

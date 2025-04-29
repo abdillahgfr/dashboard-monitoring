@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,8 +16,15 @@ use App\Http\Controllers\NotifikasiController;
 |
 */
 
+// Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('datatable-data', [HomeController::class, 'getData'])->name('datatable.data');
+Route::get('/not-found', [HomeController::class, 'notFound'])->name('not-found');
 
 Route::get('notifikasi', [NotifikasiController::class, 'show'])->name('notifikasi');
+
+
+Route::get('/login', [LoginController::class, 'showForm'])->name('login');
+
+
