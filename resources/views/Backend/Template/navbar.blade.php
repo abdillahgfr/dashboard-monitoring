@@ -1,8 +1,11 @@
 <!-- start: header -->
 <header class="header">
     <div class="logo-container">
-        <a href="/notifikasi" class="logo">
-            <h1 style="margin-top: 0px">EPersediaan</h1>
+        <a href="{{ route('home') }}" class="logo">
+            <h3 style="margin-top: 3px">
+                Monitoring Persediaan
+            </h3>
+            
         </a>
         <div class="d-md-none toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html"
             data-fire-event="sidebar-left-opened">
@@ -62,18 +65,44 @@
         <div class="nano-content">
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
-                    {{-- <li class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">
+                    <li class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">
                         <a class="nav-link {{ request()->routeIs('home') ? 'nav-link-active' : '' }}"
                             href="{{ route('home') }}">
-                            <i class="bx bx-cube" aria-hidden="true"></i>
-                            <span>Persediaan</span>
+                            <i class="bx bx-home" aria-hidden="true"></i>
+                            <span>Dashboard</span>
                         </a>
-                    </li> --}}
-                    <li class="{{ request()->is('notifikasi') ? 'nav-active' : '' }}">
-                        <a class="nav-link {{ request()->is('notifikasi') ? 'nav-link-active' : '' }}"
-                            href="/notifikasi">
+                    </li>
+                    <li class="nav-parent {{ request()->is('persediaanpdopd') || request()->is('persediaansekolah') || request()->is('persediaanblud') ? 'nav-active nav-expanded' : '' }}">
+                        <a class="nav-link" href="#">
+                            <i class="bx bx-cube" aria-hidden="true"></i>
+                            <span>Persediaan Detail</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="{{ request()->is('persediaanpdopd') ? 'nav-active' : '' }}">
+                                <a class="nav-link {{ request()->is('persediaanpdopd') ? 'nav-link-active' : '' }}" href="/persediaanpdopd">
+                                    <i class="bx bx-cube" aria-hidden="true"></i>
+                                    <span>PD/OPD</span>
+                                </a>
+                            </li>
+                            <li class="{{ request()->is('persediaansekolah') ? 'nav-active' : '' }}">
+                                <a class="nav-link {{ request()->is('persediaansekolah') ? 'nav-link-active' : '' }}" href="/persediaansekolah">
+                                    <i class="bx bx-cube" aria-hidden="true"></i>
+                                    <span>SEKOLAH</span>
+                                </a>
+                            </li>
+                            <li class="{{ request()->is('persediaanblud') ? 'nav-active' : '' }}">
+                                <a class="nav-link {{ request()->is('persediaanblud') ? 'nav-link-active' : '' }}" href="/persediaanblud">
+                                    <i class="bx bx-cube" aria-hidden="true"></i>
+                                    <span>BLUD</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="{{ request()->is('api') ? 'nav-active' : '' }}">
+                        <a class="nav-link {{ request()->is('api') ? 'nav-link-active' : '' }}"
+                            href="/data-api">
                             <i class="bx bx-file" aria-hidden="true"></i>
-                            <span>Persediaan</span>
+                            <span>Data API</span>
                         </a>
                     </li>
                 </ul>

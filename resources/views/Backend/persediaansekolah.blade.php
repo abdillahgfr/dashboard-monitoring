@@ -17,7 +17,7 @@
                                 <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
                             </div>
 
-                            <h2 class="card-title">Laporan Sistem Persediaan - {{ now()->year }}</h2>
+                            <h2 class="card-title">Laporan Sistem Persediaan Sekolah - {{ now()->year }}</h2>
                         </header>
                         <div class="card-body">
                             {{-- <form method="GET" action="{{ url('/notifikasi') }}">
@@ -63,50 +63,44 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($mergedData as $item)
-                                        <tr>
-                                            <td>{{ $item->id_kolok ?? 'No Kolok Found' }}</td>
-                                            <td>
-                                                @if ($item->upb_sekolah === 'Y')
-                                                    SEKOLAH
-                                                @elseif($item->flag_blud === 'Y')
-                                                    BLUD
-                                                @else
-                                                    PD/OPD
-                                                @endif
-                                            </td>
-                                            <td>{{ $item->nalok ?? 'No Nalok Found' }}</td>
-                                            <td>{{ $item->tahun ?? 'No Year Found' }}</td>
-                                            <td>
-                                                {{ $item->Total_SPPB_BAST ?? '0' }}
-                                            </td>
-                                            <td>
-                                                {{ $item->periode_baso ?? 'No SO Found' }}
-                                                @if ($item->periode_baso === 'No Data Found' || is_null($item->periode_baso))
-                                                    <span class="badge badge-danger">Belum</span>
-                                                @else
-                                                    <span class="badge badge-success">Sudah</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                {{ $item->tglba_fisik ?? 'No BASO Found' }}
-                                                @if ($item->tglba_fisik === 'No Data Found' || is_null($item->tglba_fisik))
-                                                    <span class="badge badge-danger">Belum</span>
-                                                @else
-                                                    <span class="badge badge-success">Sudah</span>
-                                                @endif
-                                            </td>
-                                            <td>{{ $item->no_bafisik ?? 'No BA Fisik Found' }}</td>
-                                            <td></td>
-                                            <td>
-                                                @if ($item->Total_SPPB_BAST > 0 || $item->tglba_fisik === 'No Data Found' || $item->periode_baso === 'No Data Found')
-                                                    <span class="badge badge-danger">Belum</span>
-                                                @else
-                                                    <span class="badge badge-success">Sudah</span>
-                                                @endif
-                                            </td>
-                                        </tr>
+                                        @if ($item->upb_sekolah === 'Y')  <!-- Show only SEKOLAH -->
+                                            <tr>
+                                                <td>{{ $item->id_kolok ?? 'No Kolok Found' }}</td>
+                                                <td>SEKOLAH</td>
+                                                <td>{{ $item->nalok ?? 'No Nalok Found' }}</td>
+                                                <td>{{ $item->tahun ?? 'No Year Found' }}</td>
+                                                <td>
+                                                    {{ $item->Total_SPPB_BAST ?? '0' }}
+                                                </td>
+                                                <td>
+                                                    {{ $item->periode_baso ?? 'No SO Found' }}
+                                                    @if ($item->periode_baso === 'No Data Found' || is_null($item->periode_baso))
+                                                        <span class="badge badge-danger">Belum</span>
+                                                    @else
+                                                        <span class="badge badge-success">Sudah</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    {{ $item->tglba_fisik ?? 'No BASO Found' }}
+                                                    @if ($item->tglba_fisik === 'No Data Found' || is_null($item->tglba_fisik))
+                                                        <span class="badge badge-danger">Belum</span>
+                                                    @else
+                                                        <span class="badge badge-success">Sudah</span>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $item->no_bafisik ?? 'No BA Fisik Found' }}</td>
+                                                <td></td>
+                                                <td>
+                                                    @if ($item->Total_SPPB_BAST > 0 || $item->tglba_fisik === 'No Data Found' || $item->periode_baso === 'No Data Found')
+                                                        <span class="badge badge-danger">Belum</span>
+                                                    @else
+                                                        <span class="badge badge-success">Sudah</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endif
                                     @endforeach
-                                </tbody>
+                                </tbody>                                
                             </table>
                         </div>
                     </section>

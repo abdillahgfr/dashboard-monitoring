@@ -47,7 +47,9 @@
     <link rel="stylesheet" href="vendor/select2/css/select2.css" />
     <link rel="stylesheet" href="vendor/select2-bootstrap-theme/select2-bootstrap.min.css" />
     <link rel="stylesheet" href="vendor/datatables/media/css/dataTables.bootstrap5.css" />
-
+    <link rel="stylesheet" href="vendor/morris/morris.css" />
+	<link rel="stylesheet" href="vendor/chartist/chartist.min.css" />
+    
     <!-- Theme CSS -->
     <link rel="stylesheet" href="css/theme.css" />
 
@@ -98,6 +100,22 @@
 <script src="vendor/datatables/extras/TableTools/pdfmake-0.1.32/pdfmake.min.js"></script>
 <script src="vendor/datatables/extras/TableTools/pdfmake-0.1.32/vfs_fonts.js"></script>
 
+<!-- Chart Vendor -->
+<script src="vendor/jquery-appear/jquery.appear.js"></script>
+<script src="vendor/jquery.easy-pie-chart/jquery.easypiechart.js"></script>
+<script src="vendor/flot/jquery.flot.js"></script>
+<script src="vendor/flot.tooltip/jquery.flot.tooltip.js"></script>
+<script src="vendor/flot/jquery.flot.pie.js"></script>
+<script src="vendor/flot/jquery.flot.categories.js"></script>
+<script src="vendor/flot/jquery.flot.resize.js"></script>
+<script src="vendor/jquery-sparkline/jquery.sparkline.js"></script>
+<script src="vendor/raphael/raphael.js"></script>
+<script src="vendor/morris/morris.js"></script>
+<script src="vendor/gauge/gauge.js"></script>
+<script src="vendor/snap.svg/snap.svg.js"></script>
+<script src="vendor/liquid-meter/liquid.meter.js"></script>
+<script src="vendor/chartist/chartist.js"></script>
+
 <!-- Theme Base, Components and Settings -->
 <script src="js/theme.js"></script>
 
@@ -111,5 +129,148 @@
 <script src="js/examples/examples.datatables.default.js"></script>
 <script src="js/examples/examples.datatables.row.with.details.js"></script>
 <script src="js/examples/examples.datatables.tabletools.js"></script>
+<!-- Examples -->
+<style>
+    #ChartistCSSAnimation .ct-series.ct-series-a .ct-line {
+        fill: none;
+        stroke-width: 4px;
+        stroke-dasharray: 5px;
+        -webkit-animation: dashoffset 1s linear infinite;
+        -moz-animation: dashoffset 1s linear infinite;
+        animation: dashoffset 1s linear infinite;
+    }
+
+    #ChartistCSSAnimation .ct-series.ct-series-b .ct-point {
+        -webkit-animation: bouncing-stroke 0.5s ease infinite;
+        -moz-animation: bouncing-stroke 0.5s ease infinite;
+        animation: bouncing-stroke 0.5s ease infinite;
+    }
+
+    #ChartistCSSAnimation .ct-series.ct-series-b .ct-line {
+        fill: none;
+        stroke-width: 3px;
+    }
+
+    #ChartistCSSAnimation .ct-series.ct-series-c .ct-point {
+        -webkit-animation: exploding-stroke 1s ease-out infinite;
+        -moz-animation: exploding-stroke 1s ease-out infinite;
+        animation: exploding-stroke 1s ease-out infinite;
+    }
+
+    #ChartistCSSAnimation .ct-series.ct-series-c .ct-line {
+        fill: none;
+        stroke-width: 2px;
+        stroke-dasharray: 40px 3px;
+    }
+
+    @-webkit-keyframes dashoffset {
+        0% {
+            stroke-dashoffset: 0px;
+        }
+
+        100% {
+            stroke-dashoffset: -20px;
+        };
+    }
+
+    @-moz-keyframes dashoffset {
+        0% {
+            stroke-dashoffset: 0px;
+        }
+
+        100% {
+            stroke-dashoffset: -20px;
+        };
+    }
+
+    @keyframes dashoffset {
+        0% {
+            stroke-dashoffset: 0px;
+        }
+
+        100% {
+            stroke-dashoffset: -20px;
+        };
+    }
+
+    @-webkit-keyframes bouncing-stroke {
+        0% {
+            stroke-width: 5px;
+        }
+
+        50% {
+            stroke-width: 10px;
+        }
+
+        100% {
+            stroke-width: 5px;
+        };
+    }
+
+    @-moz-keyframes bouncing-stroke {
+        0% {
+            stroke-width: 5px;
+        }
+
+        50% {
+            stroke-width: 10px;
+        }
+
+        100% {
+            stroke-width: 5px;
+        };
+    }
+
+    @keyframes bouncing-stroke {
+        0% {
+            stroke-width: 5px;
+        }
+
+        50% {
+            stroke-width: 10px;
+        }
+
+        100% {
+            stroke-width: 5px;
+        };
+    }
+
+    @-webkit-keyframes exploding-stroke {
+        0% {
+            stroke-width: 2px;
+            opacity: 1;
+        }
+
+        100% {
+            stroke-width: 20px;
+            opacity: 0;
+        };
+    }
+
+    @-moz-keyframes exploding-stroke {
+        0% {
+            stroke-width: 2px;
+            opacity: 1;
+        }
+
+        100% {
+            stroke-width: 20px;
+            opacity: 0;
+        };
+    }
+
+    @keyframes exploding-stroke {
+        0% {
+            stroke-width: 2px;
+            opacity: 1;
+        }
+
+        100% {
+            stroke-width: 20px;
+            opacity: 0;
+        };
+    }
+</style>
+<script src="js/examples/examples.charts.js"></script>
 
 </html>

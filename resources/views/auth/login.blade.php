@@ -4,7 +4,7 @@
     <!-- start: page -->
     <section class="body-sign">
         <div class="center-sign">
-            <a href="/notifikasi" class="logo float-start">
+            <a href="{{ route('home') }}" class="logo float-start">
                 <img src="img/Bpad-persediaan.png" height="75" alt="Persediaan Admin" />
             </a>
 

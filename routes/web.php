@@ -22,8 +22,13 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('datatable-data', [HomeController::class, 'getData'])->name('datatable.data');
 Route::get('/not-found', [HomeController::class, 'notFound'])->name('not-found');
 
-Route::get('notifikasi', [NotifikasiController::class, 'show'])->name('notifikasi');
+Route::get('/persediaanpdopd', [NotifikasiController::class, 'show'])->name('persediaanpdopd');
+Route::get('/persediaansekolah', [NotifikasiController::class, 'showSekolah'])->name('persediaansekolah');
+Route::get('/persediaanblud', [NotifikasiController::class, 'showBlud'])->name('persediaanblud');
 
+
+
+Route::get('/data-api', [NotifikasiController::class, 'getData'])->name('api');
 
 Route::get('/login', [LoginController::class, 'showForm'])->name('login');
 
