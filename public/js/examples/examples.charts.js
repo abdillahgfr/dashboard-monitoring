@@ -211,6 +211,58 @@ Theme Version: 	4.3.0
 		}
 	})();
 
+	/*
+	Flot: Pie
+	*/
+	(function() {
+		if( $('#sekolahPie').get(0) ) {
+			var plot = $.plot('#sekolahPie', sekolahPieData, {
+				series: {
+					pie: {
+						show: true,
+						combine: {
+							color: '#999',
+							threshold: 0.1
+						}
+					}
+				},
+				legend: {
+					show: false
+				},
+				grid: {
+					hoverable: true,
+					clickable: true
+				}
+			});
+		}
+	})();
+
+	/*
+	Flot: Pie
+	*/
+	(function() {
+		if( $('#bludPie').get(0) ) {
+			var plot = $.plot('#bludPie', bludPieData, {
+				series: {
+					pie: {
+						show: true,
+						combine: {
+							color: '#999',
+							threshold: 0.1
+						}
+					}
+				},
+				legend: {
+					show: false
+				},
+				grid: {
+					hoverable: true,
+					clickable: true
+				}
+			});
+		}
+	})();
+
 
 	/*
 	Morris: Line

@@ -10,8 +10,8 @@
         <div class="row">
             <div class="col-md-8">
                 <div class="main-error mb-3">
-                    <h2 class="error-code text-dark text-center font-weight-semibold m-0">404 <i class="fas fa-file"></i></h2>
-                    <p class="error-explanation text-center">We're sorry, page is not found.</p>
+                    <h2 class="error-code text-dark text-center font-weight-semibold m-0">200 <i class="fas fa-file"></i></h2>
+                    <p class="error-explanation text-center">All caches cleared successfully!</p>
                 </div>
             </div>
             <div class="col-md-4">

@@ -23,22 +23,36 @@
                             <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools" border="1" cellpadding="10" cellspacing="0">
                                 <thead>
                                     <tr>
-                                        <th>No Bukti</th>
+                                        <th>Nalok</th>
+                                        <th>Kolok</th>
+                                        <th>ID Kolok SKPD</th>
                                         <th>Kode SKPD</th>
+                                        <th>NO BKU</th>
                                         <th>Realisasi</th>
+                                        <th>Status DB</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($data as $index => $item)
                                         <tr>
-                                            <td>{{ $item['I_DOC_BUKTI'] ?? '-' }}</td>
+                                            <td>{{ $item['nalok'] ?? '-' }}</td>
+                                            <td>{{ $item['id_kolok'] ?? '-' }}</td>
+                                            <td>{{ $item['id_kolokskpd'] ?? '-' }}</td>
                                             <td>{{ $item['KODE_SKPD'] ?? 'Tidak ada Kode SKPD' }}</td>
-                                            <td>{{ $item['REALISASI'] ?? '-' }}</td>
+                                            <td>{{ $item['I_BKUNO'] ?? 'Tidak ada No BKU' }}</td>
+                                            <td>{{ $item['REALISASI'] ?? 'Tidak ada Realisasi' }}</td>
+                                            <td>
+                                                @if($item['status_db'] == 'Terdaftar')
+                                                    <span class="badge badge-success">Terdaftar</span>
+                                                @else
+                                                    <span class="badge badge-danger">Tidak Ada</span>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
-                                </tbody>
+                                </tbody>                                
                             </table>
-                        </div>
+                        </div>                        
                     </section>
                 </div>
             </div>

@@ -4,32 +4,32 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\LoginController;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-// Auth::routes();
-
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('datatable-data', [HomeController::class, 'getData'])->name('datatable.data');
-Route::get('/not-found', [HomeController::class, 'notFound'])->name('not-found');
-
-Route::get('/persediaanpdopd', [NotifikasiController::class, 'show'])->name('persediaanpdopd');
-Route::get('/persediaansekolah', [NotifikasiController::class, 'showSekolah'])->name('persediaansekolah');
-Route::get('/persediaanblud', [NotifikasiController::class, 'showBlud'])->name('persediaanblud');
+use Illuminate\Support\Facades\Artisan;
 
 
 
-Route::get('/data-api', [NotifikasiController::class, 'getData'])->name('api');
+Route::get('/c', function () {
+    Artisan::call('optimize:clear');
+    return view('Backend.cache'); // Displays the notfound page
+})->name('clear.cache');
+
 
 Route::get('/login', [LoginController::class, 'showForm'])->name('login');
+Route::post('/login', [LoginController::class, 'loginApi'])->name('login.submit');
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
+Route::middleware(['auth.session'])->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+
+    Route::get('/persediaanpdopd', [NotifikasiController::class, 'show'])->name('persediaanpdopd');
+    Route::get('/persediaansekolah', [NotifikasiController::class, 'showSekolah'])->name('persediaansekolah');
+    Route::get('/persediaanblud', [NotifikasiController::class, 'showBlud'])->name('persediaanblud');
+
+    Route::get('/data-api', [NotifikasiController::class, 'getData'])->name('api');
+});
+
+// Catch-all route for invalid pages (404)
+Route::fallback(function () {
+    return view('Backend.notfound'); // Displays the notfound page
+});
 

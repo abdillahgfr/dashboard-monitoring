@@ -21,12 +21,16 @@
         <div id="userbox" class="userbox">
             <a href="{{ route('home') }}" data-bs-toggle="dropdown">
                 <figure class="profile-picture">
-                    <img src="img/!logged-user.jpg" alt="Joseph Doe" class="rounded-circle"
-                        data-lock-picture="img/!logged-user.jpg" />
+                    <img src="img/Sample_User_Icon.png" class="rounded-circle" data-lock-picture="img/Sample_User_Icon.png" />
                 </figure>
-                <div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
-                    <span class="name">Akun Monitoring</span>
-                    <span class="role">Administrator</span>
+                <div class="profile-info">
+                    <span class="name">
+                        {{ session('user')['nm_emp'] ?? 'Akun Monitoring' }}
+                    </span>
+                    <span class="role">
+                        {{ session('user')['nmunit'] ?? 'Administrator' }}
+                    </span>
+                    
                 </div>
 
                 <i class="fa custom-caret"></i>
@@ -36,7 +40,11 @@
                 <ul class="list-unstyled mb-2">
                     <li class="divider"></li>
                     <li>
-                        <a role="menuitem" tabindex="-1" href="{{ route('login') }}"><i class="bx bx-power-off"></i>
+                        <a role="menuitem" tabindex="-1" href="{{ route('clear.cache') }}"><i class="bx bx-box"></i>
+                            Hapus Cache</a>
+                    </li>
+                    <li>
+                        <a role="menuitem" tabindex="-1" href="/logout"><i class="bx bx-power-off"></i>
                             Logout</a>
                     </li>
                 </ul>
@@ -98,9 +106,9 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="{{ request()->is('api') ? 'nav-active' : '' }}">
-                        <a class="nav-link {{ request()->is('api') ? 'nav-link-active' : '' }}"
-                            href="/data-api">
+                    <li class="{{ request()->routeIs('api') ? 'nav-active' : '' }}">
+                        <a class="nav-link {{ request()->routeIs('api') ? 'nav-link-active' : '' }}"
+                            href="{{ route('api') }}">
                             <i class="bx bx-file" aria-hidden="true"></i>
                             <span>Data API</span>
                         </a>

@@ -47,7 +47,7 @@ class NotifikasiController extends Controller
         
         $bpadinventoryData = DB::connection('sqlsrv_2')->table('so_data2025')
             ->whereYear('periode_baso', $currentYear) // Filter by the selected year
-            ->whereMonth('periode_baso', '03') // Filter by the selected or current month
+            ->whereMonth('periode_baso', '04') // Filter by the selected or current month
             ->select('kolok', 'smt', 'periode_baso', 'tglba_fisik', 'no_bafisik')
             ->get();
 
@@ -70,6 +70,7 @@ class NotifikasiController extends Controller
                 ->select('idskpd', DB::raw("COUNT(*) AS $columnAlias"))
                 ->whereRaw("SUBSTRING(LTRIM(RTRIM(noref)), 8, 5) = '$filter'")
                 ->whereYear('tgl_rq', '2025')
+                ->whereMonth('tgl_rq', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->whereNull('stat_rq')->orWhere('stat_rq', '');
                 })
@@ -91,6 +92,7 @@ class NotifikasiController extends Controller
                 ->select('idskpd', DB::raw("COUNT(*) AS $columnAlias"))
                 ->whereRaw("SUBSTRING(LTRIM(RTRIM(noref)), 8, 5) = '$filter'")
                 ->whereYear('tgl_rq', '2025')
+                ->whereMonth('tgl_rq', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->where('stat_rq', '1')->whereNull('stat_form');
                 })
@@ -111,6 +113,8 @@ class NotifikasiController extends Controller
                 ->table('bast_data2025')
                 ->select('kolok', DB::raw("COUNT(*) AS $columnAlias"))
                 ->where('tipe_bast', $filter)
+                ->whereYear('tgl_bast', '2025')
+                ->whereMonth('tgl_bast', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->whereNull('stat_bast')->orWhere('stat_bast', '');
                 })
@@ -129,6 +133,7 @@ class NotifikasiController extends Controller
             ->select('idkolok', DB::raw("COUNT(*) AS BASTTRANSFER"))
             ->whereRaw("SUBSTRING(noref, 10, 3) = '2.6'")
             ->whereYear('tgl_rq', '2025')
+            ->whereMonth('tgl_rq', '4') // Filter for April 2025
             ->where('stat_rq', '1')
             ->whereNull('stat_form')
             ->where('sts', '1')
@@ -141,6 +146,8 @@ class NotifikasiController extends Controller
                 ->table('bast_data2025')
                 ->select('kolok', DB::raw("COUNT(*) AS $columnAlias"))
                 ->where('tipe_bast', $filter)
+                ->whereYear('tgl_bast', '2025')
+                ->whereMonth('tgl_bast', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->whereNull('stat_bast')->orWhere('stat_bast', '');
                 })
@@ -156,6 +163,7 @@ class NotifikasiController extends Controller
                 ->select('idkolok', DB::raw("COUNT(*) AS $columnAlias"))
                 ->whereRaw("SUBSTRING(noref, 10, 3) = '$filter'")
                 ->whereYear('tgl_rq', '2025')
+                ->whereMonth('tgl_rq', '4') // Filter for April 2025
                 ->where('stat_rq', '1')
                 ->whereNull('stat_form')
                 ->where('sts', '1')
@@ -303,7 +311,7 @@ class NotifikasiController extends Controller
         
         $bpadinventoryData = DB::connection('sqlsrv_2')->table('so_data2025')
             ->whereYear('periode_baso', $currentYear) // Filter by the selected year
-            ->whereMonth('periode_baso', '03') // Filter by the selected or current month
+            ->whereMonth('periode_baso', '04') // Filter by the selected or current month
             ->select('kolok', 'smt', 'periode_baso', 'tglba_fisik', 'no_bafisik')
             ->get();
 
@@ -326,6 +334,7 @@ class NotifikasiController extends Controller
                 ->select('idskpd', DB::raw("COUNT(*) AS $columnAlias"))
                 ->whereRaw("SUBSTRING(LTRIM(RTRIM(noref)), 8, 5) = '$filter'")
                 ->whereYear('tgl_rq', '2025')
+                ->whereMonth('tgl_rq', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->whereNull('stat_rq')->orWhere('stat_rq', '');
                 })
@@ -347,6 +356,7 @@ class NotifikasiController extends Controller
                 ->select('idskpd', DB::raw("COUNT(*) AS $columnAlias"))
                 ->whereRaw("SUBSTRING(LTRIM(RTRIM(noref)), 8, 5) = '$filter'")
                 ->whereYear('tgl_rq', '2025')
+                ->whereMonth('tgl_rq', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->where('stat_rq', '1')->whereNull('stat_form');
                 })
@@ -367,6 +377,8 @@ class NotifikasiController extends Controller
                 ->table('bast_data2025')
                 ->select('kolok', DB::raw("COUNT(*) AS $columnAlias"))
                 ->where('tipe_bast', $filter)
+                ->whereYear('tgl_bast', '2025')
+                ->whereMonth('tgl_bast', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->whereNull('stat_bast')->orWhere('stat_bast', '');
                 })
@@ -385,6 +397,7 @@ class NotifikasiController extends Controller
             ->select('idkolok', DB::raw("COUNT(*) AS BASTTRANSFER"))
             ->whereRaw("SUBSTRING(noref, 10, 3) = '2.6'")
             ->whereYear('tgl_rq', '2025')
+            ->whereMonth('tgl_rq', '4') // Filter for April 2025
             ->where('stat_rq', '1')
             ->whereNull('stat_form')
             ->where('sts', '1')
@@ -397,6 +410,8 @@ class NotifikasiController extends Controller
                 ->table('bast_data2025')
                 ->select('kolok', DB::raw("COUNT(*) AS $columnAlias"))
                 ->where('tipe_bast', $filter)
+                ->whereYear('tgl_bast', '2025')
+                ->whereMonth('tgl_bast', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->whereNull('stat_bast')->orWhere('stat_bast', '');
                 })
@@ -412,6 +427,7 @@ class NotifikasiController extends Controller
                 ->select('idkolok', DB::raw("COUNT(*) AS $columnAlias"))
                 ->whereRaw("SUBSTRING(noref, 10, 3) = '$filter'")
                 ->whereYear('tgl_rq', '2025')
+                ->whereMonth('tgl_rq', '4') // Filter for April 2025
                 ->where('stat_rq', '1')
                 ->whereNull('stat_form')
                 ->where('sts', '1')
@@ -559,7 +575,7 @@ class NotifikasiController extends Controller
         
         $bpadinventoryData = DB::connection('sqlsrv_2')->table('so_data2025')
             ->whereYear('periode_baso', $currentYear) // Filter by the selected year
-            ->whereMonth('periode_baso', '03') // Filter by the selected or current month
+            ->whereMonth('periode_baso', '04') // Filter by the selected or current month
             ->select('kolok', 'smt', 'periode_baso', 'tglba_fisik', 'no_bafisik')
             ->get();
 
@@ -582,6 +598,7 @@ class NotifikasiController extends Controller
                 ->select('idskpd', DB::raw("COUNT(*) AS $columnAlias"))
                 ->whereRaw("SUBSTRING(LTRIM(RTRIM(noref)), 8, 5) = '$filter'")
                 ->whereYear('tgl_rq', '2025')
+                ->whereMonth('tgl_rq', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->whereNull('stat_rq')->orWhere('stat_rq', '');
                 })
@@ -603,6 +620,7 @@ class NotifikasiController extends Controller
                 ->select('idskpd', DB::raw("COUNT(*) AS $columnAlias"))
                 ->whereRaw("SUBSTRING(LTRIM(RTRIM(noref)), 8, 5) = '$filter'")
                 ->whereYear('tgl_rq', '2025')
+                ->whereMonth('tgl_rq', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->where('stat_rq', '1')->whereNull('stat_form');
                 })
@@ -623,6 +641,8 @@ class NotifikasiController extends Controller
                 ->table('bast_data2025')
                 ->select('kolok', DB::raw("COUNT(*) AS $columnAlias"))
                 ->where('tipe_bast', $filter)
+                ->whereYear('tgl_bast', '2025')
+                ->whereMonth('tgl_bast', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->whereNull('stat_bast')->orWhere('stat_bast', '');
                 })
@@ -641,6 +661,7 @@ class NotifikasiController extends Controller
             ->select('idkolok', DB::raw("COUNT(*) AS BASTTRANSFER"))
             ->whereRaw("SUBSTRING(noref, 10, 3) = '2.6'")
             ->whereYear('tgl_rq', '2025')
+            ->whereMonth('tgl_rq', '4') // Filter for April 2025
             ->where('stat_rq', '1')
             ->whereNull('stat_form')
             ->where('sts', '1')
@@ -653,6 +674,8 @@ class NotifikasiController extends Controller
                 ->table('bast_data2025')
                 ->select('kolok', DB::raw("COUNT(*) AS $columnAlias"))
                 ->where('tipe_bast', $filter)
+                ->whereYear('tgl_bast', '2025')
+                ->whereMonth('tgl_bast', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->whereNull('stat_bast')->orWhere('stat_bast', '');
                 })
@@ -668,6 +691,7 @@ class NotifikasiController extends Controller
                 ->select('idkolok', DB::raw("COUNT(*) AS $columnAlias"))
                 ->whereRaw("SUBSTRING(noref, 10, 3) = '$filter'")
                 ->whereYear('tgl_rq', '2025')
+                ->whereMonth('tgl_rq', '4') // Filter for April 2025
                 ->where('stat_rq', '1')
                 ->whereNull('stat_form')
                 ->where('sts', '1')
@@ -780,46 +804,52 @@ class NotifikasiController extends Controller
 
     public function getData()
     {
-
-        // Ambil daftar kode SKPD dari database
-        // $skpdList = DB::connection('sqlsrv')
-        // ->table('master_profile_detail')
-        // ->where('tahun', '2025')
-        // ->where('sts', '1')
-        // ->pluck('KODE_SKPD') // Ambil hanya kode SKPD
-        // ->toArray();
-
-        $skpdList = ['10101000', '10101101']; // Daftar SKPD yang ingin diambil
-
         $username = 'bpad';
         $password = 'bp4d';
-
-        $response = Http::withBasicAuth($username, $password)
-            ->withOptions([
-                'verify' => false, // Nonaktifkan SSL verification sementara
+        $tahun = '2025';
+    
+        // Ambil semua kode_skpd dari database
+        $kodeSkpdList = DB::connection('sqlsrv')->table('master_profile_detail')
+            ->where('tahun', $tahun)
+            ->where('sts', '1')
+            ->whereNull('upb_sekolah')
+            ->whereNull('flag_blud')
+            ->select('kode_skpd', 'id_kolok', 'nalok', 'id_kolokskpd') // Ambil kolom yg dibutuhkan
+            ->distinct()
+            ->get();
+    
+        $finalData = [];
+    
+        foreach ($kodeSkpdList as $skpd) {
+            $response = Http::withBasicAuth($username, $password)
+                ->withOptions([
+                'verify' => false, // nonaktifkan verifikasi SSL
+                'timeout' => 30, // timeout dalam detik
+                'connect_timeout' => 10,
             ])
-            ->get('https://soadki.jakarta.go.id/rest/gov/dki/sipkd/realisasipernobukti2/ws', [
-                'skpd' => $skpdList,
-                'tahun' => '2025'
-            ]);
-
-        $data = [];
-        if ($response->successful()) {
-            $json = $response->json();
-            $data = $json['results']; // Ambil hanya array dalam 'results'
-        } else {
-            $data = [];
+                ->get('https://soadki.jakarta.go.id/rest/gov/dki/sipkd/realisasipernobukti2/ws', [
+                    'skpd' => $skpd->kode_skpd,
+                    'tahun' => $tahun,
+                ]);
+    
+            if ($response->successful()) {
+                $apiData = $response->json();
+                $apiResults = $apiData['results'] ?? [];
+    
+                foreach ($apiResults as $item) {
+                    // Tambahkan data dari database ke tiap baris API
+                    $item['id_kolok'] = $skpd->id_kolok;
+                    $item['id_kolokskpd'] = $skpd->id_kolokskpd;
+                    $item['nalok'] = $skpd->nalok;
+                    $item['status_db'] = ($item['KODE_SKPD'] == $skpd->kode_skpd) ? 'Terdaftar' : 'Tidak Ada';
+    
+                    $finalData[] = $item;
+                }
+            }
         }
-        
-
-        dd($data); 
-
-        // Jika tidak ada data yang cocok, tampilkan pesan "Data Not Found"
-        if (empty($data)) {
-            return view('Backend.dataapi')->with('message', 'Data Not Found');
-        }
-
-        // return view('Backend.dataapi', compact('data'));
+    
+        return view('Backend.dataapi', ['data' => $finalData]);
     }
+    
 
 }

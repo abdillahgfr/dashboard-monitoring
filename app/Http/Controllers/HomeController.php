@@ -12,6 +12,13 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
+
+        $user = session('user');
+        
+        if (!$user) {
+            return redirect()->route('login')->withErrors(['login_error' => 'Please log in first.']);
+        }
+              
         // Retrieve master data from sqlsrv
         $bpadmasterData = DB::connection('sqlsrv')->table('master_profile')
             ->join('master_profile_detail', 'master_profile.id_kolok', '=', 'master_profile_detail.id_kolok')
@@ -46,7 +53,7 @@ class HomeController extends Controller
         
         $bpadinventoryData = DB::connection('sqlsrv_2')->table('so_data2025')
             ->whereYear('periode_baso', $currentYear) // Filter by the selected year
-            ->whereMonth('periode_baso', '03') // Filter by the selected or current month
+            ->whereMonth('periode_baso', '04') // Filter by the selected or current month
             ->select('kolok', 'smt', 'periode_baso', 'tglba_fisik', 'no_bafisik')
             ->get();
 
@@ -69,6 +76,7 @@ class HomeController extends Controller
                 ->select('idskpd', DB::raw("COUNT(*) AS $columnAlias"))
                 ->whereRaw("SUBSTRING(LTRIM(RTRIM(noref)), 8, 5) = '$filter'")
                 ->whereYear('tgl_rq', '2025')
+                ->whereMonth('tgl_rq', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->whereNull('stat_rq')->orWhere('stat_rq', '');
                 })
@@ -90,6 +98,7 @@ class HomeController extends Controller
                 ->select('idskpd', DB::raw("COUNT(*) AS $columnAlias"))
                 ->whereRaw("SUBSTRING(LTRIM(RTRIM(noref)), 8, 5) = '$filter'")
                 ->whereYear('tgl_rq', '2025')
+                ->whereMonth('tgl_rq', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->where('stat_rq', '1')->whereNull('stat_form');
                 })
@@ -110,6 +119,8 @@ class HomeController extends Controller
                 ->table('bast_data2025')
                 ->select('kolok', DB::raw("COUNT(*) AS $columnAlias"))
                 ->where('tipe_bast', $filter)
+                ->whereYear('tgl_bast', '2025')
+                ->whereMonth('tgl_bast', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->whereNull('stat_bast')->orWhere('stat_bast', '');
                 })
@@ -128,6 +139,7 @@ class HomeController extends Controller
             ->select('idkolok', DB::raw("COUNT(*) AS BASTTRANSFER"))
             ->whereRaw("SUBSTRING(noref, 10, 3) = '2.6'")
             ->whereYear('tgl_rq', '2025')
+            ->whereMonth('tgl_rq', '4') // Filter for April 2025
             ->where('stat_rq', '1')
             ->whereNull('stat_form')
             ->where('sts', '1')
@@ -140,6 +152,8 @@ class HomeController extends Controller
                 ->table('bast_data2025')
                 ->select('kolok', DB::raw("COUNT(*) AS $columnAlias"))
                 ->where('tipe_bast', $filter)
+                ->whereYear('tgl_bast', '2025')
+                ->whereMonth('tgl_bast', '4') // Filter for April 2025
                 ->where(function ($query) {
                     $query->whereNull('stat_bast')->orWhere('stat_bast', '');
                 })
@@ -155,6 +169,7 @@ class HomeController extends Controller
                 ->select('idkolok', DB::raw("COUNT(*) AS $columnAlias"))
                 ->whereRaw("SUBSTRING(noref, 10, 3) = '$filter'")
                 ->whereYear('tgl_rq', '2025')
+                ->whereMonth('tgl_rq', '4') // Filter for April 2025
                 ->where('stat_rq', '1')
                 ->whereNull('stat_form')
                 ->where('sts', '1')
@@ -262,14 +277,50 @@ class HomeController extends Controller
         $belumCount = 0;
 
         foreach ($mergedData as $item) {
-            if (
-                ($item->Total_SPPB_BAST == 0) &&
-                ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
-                ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso))
-            ) {
-                $selesaiCount++;
-            } else {
-                $belumCount++;
+            if  ($item->upb_sekolah !== 'Y' && $item->flag_blud !== 'Y') {
+                if (
+                    ($item->Total_SPPB_BAST == 0) &&
+                    ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
+                    ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso))
+                ) {
+                    $selesaiCount++;
+                } else {
+                    $belumCount++;
+                }
+            }
+        }
+
+        $sekolahSudah = 0;
+        $sekolahBelum = 0;
+
+        foreach ($mergedData as $item) {
+            if  ($item->upb_sekolah == 'Y') {
+                if (
+                    ($item->Total_SPPB_BAST == 0) &&
+                    ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
+                    ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso))
+                ) {
+                    $sekolahSudah++;
+                } else {
+                    $sekolahBelum++;
+                }
+            }
+        }
+
+        $bludSudah = 0;
+        $bludBelum = 0;
+
+        foreach ($mergedData as $item) {
+            if  ($item->flag_blud == 'Y') {
+                if (
+                    ($item->Total_SPPB_BAST == 0) &&
+                    ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
+                    ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso))
+                ) {
+                    $bludSudah++;
+                } else {
+                    $bludBelum++;
+                }
             }
         }
         
@@ -278,7 +329,12 @@ class HomeController extends Controller
             'tahunList' => $tahunList,
             'listBulan' => $listBulan,
             'selesaiCount' => $selesaiCount, 
-            'belumCount' => $belumCount
+            'belumCount' => $belumCount,
+            'sekolahSudah' => $sekolahSudah, 
+            'sekolahBelum' => $sekolahBelum,
+            'bludSudah' => $bludSudah, 
+            'bludBelum' => $bludBelum,
+            'user' => $user
         ]);
     }  
 

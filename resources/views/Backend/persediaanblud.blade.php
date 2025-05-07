@@ -17,7 +17,7 @@
                                 <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
                             </div>
 
-                            <h2 class="card-title">Laporan Sistem Persediaan BLUD - {{ now()->year }}</h2>
+                            <h2 class="card-title">Laporan Sistem Persediaan BLUD - April {{ now()->year }}</h2>
                         </header>
                         <div class="card-body">
                             {{-- <form method="GET" action="{{ url('/notifikasi') }}">
