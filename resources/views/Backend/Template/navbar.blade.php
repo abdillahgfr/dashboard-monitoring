@@ -110,7 +110,7 @@
                         <a class="nav-link {{ request()->routeIs('api') ? 'nav-link-active' : '' }}"
                             href="{{ route('api') }}">
                             <i class="bx bx-file" aria-hidden="true"></i>
-                            <span>Data API</span>
+                            <span>Data Rekon BKU (API)</span>
                         </a>
                     </li>
                 </ul>

@@ -807,49 +807,113 @@ class NotifikasiController extends Controller
         $username = 'bpad';
         $password = 'bp4d';
         $tahun = '2025';
-    
-        // Ambil semua kode_skpd dari database
+        $maxData = 10000;
+        $dataCount = 0;
+
+        $rekapBelumRekon = [];
+
         $kodeSkpdList = DB::connection('sqlsrv')->table('master_profile_detail')
             ->where('tahun', $tahun)
             ->where('sts', '1')
             ->whereNull('upb_sekolah')
             ->whereNull('flag_blud')
-            ->select('kode_skpd', 'id_kolok', 'nalok', 'id_kolokskpd') // Ambil kolom yg dibutuhkan
+            ->select('kode_skpd', 'id_kolok', 'nalok', 'id_kolokskpd')
             ->distinct()
             ->get();
-    
+
+        // Ambil kombinasi no_bku + realisasi + no_bukti dari DB
+        $dbRekonPairs = DB::connection('sqlsrv_2')
+            ->table('rekonbku_detail2025')
+            ->select('no_bku', 'realisasi', 'no_bukti', DB::raw('COUNT(*) as jumlah'))
+            ->groupBy('no_bku', 'realisasi', 'no_bukti')
+            ->get()
+            ->reduce(function ($carry, $item) {
+                $noBku = trim((string) $item->no_bku);
+                $realisasi = number_format((float) $item->realisasi, 2, '.', '');
+                $noBukti = trim((string) $item->no_bukti);
+                $key = $noBku . '|' . $realisasi . '|' . $noBukti;
+                $carry[$key] = $item->jumlah;
+                return $carry;
+            }, []);
+
+        // Ambil semua kode akun yang flag_ba = 1 dari glo_katbrg
+        $akunBA = DB::connection('sqlsrv_2')
+            ->table('glo_katbrg')
+            ->where('flag_ba', 1)
+            ->pluck('kd_akun')
+            ->map(function ($val) {
+                return trim((string) $val);
+            })
+            ->toArray();
+        $akunBA = array_flip($akunBA); // konversi ke array lookup
+
         $finalData = [];
-    
+
         foreach ($kodeSkpdList as $skpd) {
+            if ($dataCount >= $maxData) {
+                break;
+            }
+
             $response = Http::withBasicAuth($username, $password)
                 ->withOptions([
-                'verify' => false, // nonaktifkan verifikasi SSL
-                'timeout' => 30, // timeout dalam detik
-                'connect_timeout' => 10,
-            ])
+                    'verify' => false,
+                    'timeout' => 30,
+                    'connect_timeout' => 10,
+                ])
                 ->get('https://soadki.jakarta.go.id/rest/gov/dki/sipkd/realisasipernobukti2/ws', [
                     'skpd' => $skpd->kode_skpd,
                     'tahun' => $tahun,
                 ]);
-    
+
             if ($response->successful()) {
                 $apiData = $response->json();
                 $apiResults = $apiData['results'] ?? [];
-    
+
                 foreach ($apiResults as $item) {
-                    // Tambahkan data dari database ke tiap baris API
+                    if ($dataCount >= $maxData) {
+                        break 2;
+                    }
+
+                    $noBku = trim((string) ($item['I_BKUNO'] ?? ''));
+                    $realisasi = number_format((float) ($item['REALISASI'] ?? 0), 2, '.', '');
+                    $noBukti = trim((string) ($item['I_DOC_BUKTI'] ?? ''));
+                    $key = $noBku . '|' . $realisasi . '|' . $noBukti;
+
                     $item['id_kolok'] = $skpd->id_kolok;
                     $item['id_kolokskpd'] = $skpd->id_kolokskpd;
                     $item['nalok'] = $skpd->nalok;
                     $item['status_db'] = ($item['KODE_SKPD'] == $skpd->kode_skpd) ? 'Terdaftar' : 'Tidak Ada';
-    
+
+                    // Status rekon berdasarkan 3 kunci
+                    $item['rekon_status'] = 'Belum Direkon';
+                    if ($noBku && $realisasi && $noBukti && isset($dbRekonPairs[$key]) && $dbRekonPairs[$key] > 0) {
+                        $item['rekon_status'] = 'Sudah Direkon';
+                        $dbRekonPairs[$key]--;
+                    }
+
+                    // Status akun BA
+                    $kodeAkun = trim((string) ($item['KODE_AKUN'] ?? ''));
+                    $item['akun_ba_status'] = isset($akunBA[$kodeAkun]) ? 'Termasuk BA' : 'Bukan BA';
+
+                    // Rekap per kolok untuk yang sudah direkon
+                    if ($item['rekon_status'] === 'Sudah Direkon') {
+                        $kolok = $skpd->id_kolok;
+                        if (!isset($rekapBelumRekon[$kolok])) {
+                            $rekapBelumRekon[$kolok] = 0;
+                        }
+                        $rekapBelumRekon[$kolok]++;
+                    }
+
                     $finalData[] = $item;
+                    $dataCount++;
                 }
             }
         }
-    
-        return view('Backend.dataapi', ['data' => $finalData]);
+
+        return view('Backend.dataapi', [
+            'data' => $finalData,
+            'rekapBelumRekon' => $rekapBelumRekon
+        ]);
     }
-    
 
 }
