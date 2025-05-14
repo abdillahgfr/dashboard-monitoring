@@ -20,6 +20,7 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth.session'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/dashboard', [HomeController::class, 'home'])->name('index');
 
     Route::get('/persediaanpdopd', [NotifikasiController::class, 'show'])->name('persediaanpdopd');
     Route::get('/persediaansekolah', [NotifikasiController::class, 'showSekolah'])->name('persediaansekolah');

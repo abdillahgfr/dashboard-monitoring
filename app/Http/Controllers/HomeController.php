@@ -4,12 +4,216 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Persediaan;
-use App\Models\PersediaanDetail;
+use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\DataTables;
 
 class HomeController extends Controller
 {
+
+    public function home()
+    {
+
+        $user = session('user');
+        
+        if (!$user) {
+            return redirect()->route('login')->withErrors(['login_error' => 'Please log in first.']);
+        }
+        
+        return view('Backend.index');
+    }
+
+    public function notFound()
+    {
+        return view('Backend.notfound');
+    }
+    
+    private function getRekapSudahRekon($tahun, $maxData = 10000)
+    {
+        $username = 'bpad';
+        $password = 'bp4d';
+        $dataCount = 0;
+
+        $rekap = [];
+
+        // Ambil daftar kode SKPD
+        $kodeSkpdList = DB::connection('sqlsrv')->table('master_profile_detail')
+            ->where('tahun', $tahun)
+            ->where('sts', '1')
+            ->whereNull('upb_sekolah')
+            ->select('kode_skpd', 'id_kolok', 'nalok', 'id_kolokskpd')
+            ->distinct()
+            ->get();
+
+        // Ambil data rekon BKU dari database
+        $dbRekonPairs = DB::connection('sqlsrv_2')
+            ->table("rekonbku_detail$tahun")
+            ->select('no_bku', 'realisasi', 'no_bukti', DB::raw('COUNT(*) as jumlah'))
+            ->groupBy('no_bku', 'realisasi', 'no_bukti')
+            ->get()
+            ->reduce(function ($carry, $item) {
+                $noBku = trim((string) $item->no_bku);
+                $realisasi = number_format((float) $item->realisasi, 2, '.', '');
+                $noBukti = trim((string) $item->no_bukti);
+                $key = $noBku . '|' . $realisasi . '|' . $noBukti;
+                $carry[$key] = $item->jumlah;
+                return $carry;
+            }, []);
+
+        // Loop untuk masing-masing SKPD
+        foreach ($kodeSkpdList as $skpd) {
+        if ($dataCount >= $maxData) break;
+
+        // Ambil data dari API untuk tiap SKPD
+        $response = Http::withBasicAuth($username, $password)
+            ->withOptions(['verify' => false, 'timeout' => 30, 'connect_timeout' => 10])
+            ->get('https://soadki.jakarta.go.id/rest/gov/dki/sipkd/realisasipernobukti2/ws', [
+                'skpd' => $skpd->kode_skpd,
+                'tahun' => $tahun,
+            ]);
+
+        if ($response->successful()) {
+            $results = $response->json()['results'] ?? [];
+
+            // Loop untuk tiap data item
+            foreach ($results as $item) {
+                if ($dataCount >= $maxData) break 2;
+
+                // Ambil nilai no_bku, realisasi dan no_bukti
+                $noBku = trim((string) ($item['I_BKUNO'] ?? ''));
+                $realisasi = number_format((float) ($item['REALISASI'] ?? 0), 2, '.', '');
+                $noBukti = trim((string) ($item['I_DOC_BUKTI'] ?? ''));
+                $key = $noBku . '|' . $realisasi . '|' . $noBukti;
+
+                // Pastikan $kolok ada di dalam loop
+                $kolok = $skpd->id_kolok;  // $kolok harus didefinisikan berdasarkan data skpd yang sedang diproses
+
+                // Jika data sudah ada di dbRekonPairs, hitung sebagai data yang sudah direkon
+                if (isset($dbRekonPairs[$key]) && $dbRekonPairs[$key] > 0) {
+                    $rekap[$kolok]['sudah_direkon'] = ($rekap[$kolok]['sudah_direkon'] ?? 0) + 1;
+                    // Kurangi jumlah dari dbRekonPairs setelah direkon
+                    $dbRekonPairs[$key]--;
+                } else {
+                    // Jika tidak ditemukan, hitung sebagai data yang belum direkon
+                    $rekap[$kolok]['belum_direkon'] = ($rekap[$kolok]['belum_direkon'] ?? 0) + 1;
+                }
+
+                // Hitung total data untuk tiap kolok
+                $rekap[$kolok]['total'] = ($rekap[$kolok]['total'] ?? 0) + 1;
+
+                $dataCount++;
+            }
+        }
+        }
+
+        return $rekap;
+
+    }
+
+    private function getRekapBelumRekon($tahun, $maxData = 10000)
+    {
+        $username = 'bpad';
+        $password = 'bp4d';
+        $dataCount = 0;
+        $rekapBelumRekon = [];
+
+        $kodeSkpdList = DB::connection('sqlsrv')->table('master_profile_detail')
+            ->where('tahun', $tahun)
+            ->where('sts', '1')
+            ->whereNull('upb_sekolah')
+            ->select('kode_skpd', 'id_kolok', 'nalok', 'id_kolokskpd')
+            ->distinct()
+            ->get();
+
+        // Ambil data rekonsiliasi dari DB
+        $dbRekonPairs = DB::connection('sqlsrv_2')
+            ->table("rekonbku_detail$tahun")
+            ->select('no_bku', 'realisasi', 'no_bukti', DB::raw('COUNT(*) as jumlah'))
+            ->groupBy('no_bku', 'realisasi', 'no_bukti')
+            ->get()
+            ->reduce(function ($carry, $item) {
+                $key = trim((string) $item->no_bku) . '|' .
+                    number_format((float) $item->realisasi, 2, '.', '') . '|' .
+                    trim((string) $item->no_bukti);
+                $carry[$key] = $item->jumlah;
+                return $carry;
+            }, []);
+
+        // Ambil akun dengan flag_ba = 1
+        $akunBA = DB::connection('sqlsrv_2')
+            ->table('glo_katbrg')
+            ->where('flag_ba', 1)
+            ->pluck('kd_akun')
+            ->map(fn($val) => trim((string) $val))
+            ->toArray();
+        $akunBA = array_flip($akunBA); // array lookup
+
+        foreach ($kodeSkpdList as $skpd) {
+            if ($dataCount >= $maxData) break;
+
+            $response = Http::withBasicAuth($username, $password)
+                ->withOptions(['verify' => false, 'timeout' => 30, 'connect_timeout' => 10])
+                ->get('https://soadki.jakarta.go.id/rest/gov/dki/sipkd/realisasipernobukti2/ws', [
+                    'skpd' => $skpd->kode_skpd,
+                    'tahun' => $tahun,
+                ]);
+
+            if ($response->successful()) {
+                $results = $response->json()['results'] ?? [];
+
+                foreach ($results as $item) {
+                    if ($dataCount >= $maxData) break 2;
+
+                    $noBku = trim((string) ($item['I_BKUNO'] ?? ''));
+                    $realisasi = number_format((float) ($item['REALISASI'] ?? 0), 2, '.', '');
+                    $noBukti = trim((string) ($item['I_DOC_BUKTI'] ?? ''));
+                    $key = $noBku . '|' . $realisasi . '|' . $noBukti;
+                    $kodeAkun = trim((string) ($item['KODE_AKUN'] ?? ''));
+
+                    // Hanya proses data jika akun termasuk BA
+                    if (!isset($akunBA[$kodeAkun])) {
+                        continue;
+                    }
+
+                    if (!(isset($dbRekonPairs[$key]) && $dbRekonPairs[$key] > 0)) {
+                        $kolok = $skpd->id_kolok;
+                        $rekapBelumRekon[$kolok] = ($rekapBelumRekon[$kolok] ?? 0) + 1;
+                    } else {
+                        $dbRekonPairs[$key]--;
+                    }
+
+                    $dataCount++;
+                }
+            }
+        }
+
+        return $rekapBelumRekon;
+    }
+
+    private function getStatusRekonBku($rekapSudahRekon, $rekapBelumRekon)
+    {
+        $statusRekon = [];
+
+        $allKolok = array_unique(array_merge(array_keys($rekapSudahRekon), array_keys($rekapBelumRekon)));
+
+        foreach ($allKolok as $kolok) {
+            $sudah = $rekapSudahRekon[$kolok]['sudah_direkon'] ?? 0;
+            $total = $rekapSudahRekon[$kolok]['total'] ?? $sudah;
+
+            $belumBA = $rekapBelumRekon[$kolok] ?? 0;
+
+            $status = ($belumBA === 0) ? 'Selesai' : 'Belum Selesai';
+
+            $statusRekon[$kolok] = [
+                'sudah_direkon' => $sudah,
+                'belum_direkon_ba' => $belumBA,
+                'total' => $total,
+                'status' => $status
+            ];
+        }
+
+        return $statusRekon;
+    }
+
     public function index(Request $request)
     {
 
@@ -273,15 +477,27 @@ class HomeController extends Controller
             return $item;
         });
 
+        
+        $rekapSudahRekon = $this->getRekapSudahRekon($currentYear);
+
+        $rekapBelumRekon = $this->getRekapBelumRekon($currentYear);
+
+        // Ambil status rekonsiliasi BKU berdasarkan data rekap
+        $statusRekon = $this->getStatusRekonBku($rekapSudahRekon, $rekapBelumRekon);
+
         $selesaiCount = 0;
         $belumCount = 0;
 
         foreach ($mergedData as $item) {
-            if  ($item->upb_sekolah !== 'Y' && $item->flag_blud !== 'Y') {
+            if ($item->upb_sekolah !== 'Y' && $item->flag_blud !== 'Y') {
+                // Ambil status rekon dari hasil fungsi
+                $rekonBkuStatus = $statusRekon[$item->id_kolok]['status'] ?? null;
+
                 if (
                     ($item->Total_SPPB_BAST == 0) &&
                     ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
-                    ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso))
+                    ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
+                    ($rekonBkuStatus === 'Selesai') // Tambahkan status rekonsiliasi BKU
                 ) {
                     $selesaiCount++;
                 } else {
@@ -298,7 +514,8 @@ class HomeController extends Controller
                 if (
                     ($item->Total_SPPB_BAST == 0) &&
                     ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
-                    ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso))
+                    ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
+                    ($rekonBkuStatus === 'Selesai') // Tambahkan status rekonsiliasi BKU
                 ) {
                     $sekolahSudah++;
                 } else {
@@ -315,7 +532,8 @@ class HomeController extends Controller
                 if (
                     ($item->Total_SPPB_BAST == 0) &&
                     ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
-                    ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso))
+                    ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
+                    ($rekonBkuStatus === 'Selesai') // Tambahkan status rekonsiliasi BKU
                 ) {
                     $bludSudah++;
                 } else {
@@ -334,12 +552,11 @@ class HomeController extends Controller
             'sekolahBelum' => $sekolahBelum,
             'bludSudah' => $bludSudah, 
             'bludBelum' => $bludBelum,
-            'user' => $user
+            'user' => $user,
+            'rekapSudahRekon' => $rekapSudahRekon,
+            'rekapBelumRekon' => $rekapBelumRekon,
+            'statusRekon' => $statusRekon
         ]);
     }  
 
-    public function notFound()
-    {
-        return view('Backend.notfound');
-    }
 }

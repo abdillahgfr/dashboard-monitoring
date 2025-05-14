@@ -4,7 +4,7 @@
     <!-- Defines the 'content' section -->
     <section role="main" class="content-body">
         <header class="page-header">
-            <h2>Dashboard</h2>
+            <h2>Monitoring Persediaan</h2>
         </header>
 
         <div class="inner-wrapper">
@@ -137,7 +137,8 @@
                                                 <th>Stok Opname</th>
                                                 <th>BA Stok Fisik</th>
                                                 <th>Rekon BKU</th>
-                                                <th>Status</th>
+                                                {{-- <th>Status</th> --}}
+                                                <th>Progress</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -166,15 +167,40 @@
                                                             <span class="badge badge-success">Sudah</span>
                                                         @endif
                                                     </td>
-                                                    <td></td>
                                                     <td>
-                                                        @if ($item->Total_SPPB_BAST > 0 || $item->tglba_fisik === 'No Data Found' || $item->periode_baso === 'No Data Found')
-                                                            <span class="badge badge-danger">Belum</span>
-                                                        @else
-                                                            <span class="badge badge-success">Sudah</span>
-                                                        @endif
+                                                        Sudah: {{ $statusRekon[$item->id_kolok]['sudah_direkon'] ?? 0 }}<br>
+                                                        Belum: {{ $statusRekon[$item->id_kolok]['belum_direkon_ba'] ?? 0 }}<br>
+                                                        Status: <strong>{{ $statusRekon[$item->id_kolok]['status'] ?? '-' }}</strong>
                                                     </td>
+                                                    <td>
+                                                        @php
+                                                            $rekonBkuStatus = $statusRekon[$item->id_kolok]['status'] ?? null;
 
+                                                            // Hitung jumlah kondisi yang terpenuhi
+                                                            $conditionsMet = 0;
+
+                                                            if ($item->Total_SPPB_BAST == 0) $conditionsMet++; // Selesai jika 0
+                                                            if (!is_null($item->tglba_fisik) && $item->tglba_fisik !== 'No Data Found') $conditionsMet++;
+                                                            if (!is_null($item->periode_baso) && $item->periode_baso !== 'No Data Found') $conditionsMet++;
+                                                            if ($rekonBkuStatus === 'Selesai') $conditionsMet++; // Kondisi tambahan untuk status rekon BKU
+
+                                                            // Hitung persentase progress berdasarkan kondisi yang dipenuhi
+                                                            $maxConditions = 4; // Pastikan semua kondisi dihitung dengan benar
+                                                            $progress = round(($conditionsMet / $maxConditions) * 100, 2);
+                                                        @endphp
+
+                                                        <div class="progress progress-sm progress-half-rounded m-0 mt-1 light">
+                                                            <div class="progress-bar 
+                                                                {{ $progress == 100 ? 'progress-bar-success' : ($progress >= 50 ? 'progress-bar-warning' : 'progress-bar-danger') }}"
+                                                                role="progressbar"
+                                                                aria-valuenow="{{ $progress }}"
+                                                                aria-valuemin="0"
+                                                                aria-valuemax="100"
+                                                                style="width: {{ $progress }}%;">
+                                                                {{ $progress }}%
+                                                            </div>
+                                                        </div>
+                                                    </td>                                                    
                                                 </tr>
                                             @endforeach
                                         </tbody>

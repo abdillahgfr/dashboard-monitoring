@@ -73,10 +73,17 @@
         <div class="nano-content">
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
+                    <li class="{{ request()->routeIs('index') ? 'nav-active' : '' }}">
+                        <a class="nav-link {{ request()->routeIs('index') ? 'nav-link-active' : '' }}"
+                            href="{{ route('index') }}">
+                            <i class="bx bx-home" aria-hidden="true"></i>
+                            <span>index</span>
+                        </a>
+                    </li>
                     <li class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">
                         <a class="nav-link {{ request()->routeIs('home') ? 'nav-link-active' : '' }}"
                             href="{{ route('home') }}">
-                            <i class="bx bx-home" aria-hidden="true"></i>
+                            <i class="bx bx-window-alt" aria-hidden="true"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
@@ -106,13 +113,13 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="{{ request()->routeIs('api') ? 'nav-active' : '' }}">
+                    {{-- <li class="{{ request()->routeIs('api') ? 'nav-active' : '' }}">
                         <a class="nav-link {{ request()->routeIs('api') ? 'nav-link-active' : '' }}"
                             href="{{ route('api') }}">
                             <i class="bx bx-file" aria-hidden="true"></i>
                             <span>Data Rekon BKU (API)</span>
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
             </nav>
             <hr class="separator" />

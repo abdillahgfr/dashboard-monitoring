@@ -69,9 +69,7 @@
                                                 <td>PD/OPD</td>
                                                 <td>{{ $item->nalok ?? 'No Nalok Found' }}</td>
                                                 <td>{{ $item->tahun ?? 'No Year Found' }}</td>
-                                                <td>
-                                                    {{ $item->Total_SPPB_BAST ?? '0' }}
-                                                </td>
+                                                <td>{{ $item->Total_SPPB_BAST ?? '0' }}</td>
                                                 <td>
                                                     {{ $item->periode_baso ?? 'No SO Found' }}
                                                     @if ($item->periode_baso === 'No Data Found' || is_null($item->periode_baso))
@@ -89,9 +87,24 @@
                                                     @endif
                                                 </td>
                                                 <td>{{ $item->no_bafisik ?? 'No BA Fisik Found' }}</td>
-                                                <td></td>
                                                 <td>
-                                                    @if ($item->Total_SPPB_BAST > 0 || $item->tglba_fisik === 'No Data Found' || $item->periode_baso === 'No Data Found')
+                                                    Sudah: {{ $statusRekon[$item->id_kolok]['sudah_direkon'] ?? 0 }}<br>
+                                                    Belum: {{ $statusRekon[$item->id_kolok]['belum_direkon_ba'] ?? 0 }}<br>
+                                                    Status: <strong>{{ $statusRekon[$item->id_kolok]['status'] ?? '-' }}</strong>
+                                                </td>
+                                                <td>
+                                                    @php
+                                                        $rekonBkuStatus = $statusRekon[$item->id_kolok]['status'] ?? null;
+
+                                                        // Jika salah satu dari kondisi ini TIDAK memenuhi, maka statusnya BELUM
+                                                        $isBelum = 
+                                                            ($item->Total_SPPB_BAST > 0) || 
+                                                            ($item->tglba_fisik === 'No Data Found') || 
+                                                            ($item->periode_baso === 'No Data Found') || 
+                                                            ($rekonBkuStatus === 'Belum Selesai');
+                                                    @endphp
+
+                                                    @if ($isBelum)
                                                         <span class="badge badge-danger">Belum</span>
                                                     @else
                                                         <span class="badge badge-success">Sudah</span>

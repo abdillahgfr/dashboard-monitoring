@@ -36,7 +36,7 @@ class LoginController extends Controller
             ]);
 
             // Redirect to dashboard or other protected route
-            return redirect()->route('home')->with('success', 'Login successful!');
+            return redirect()->route('index')->with('success', 'Login successful!');
         }
 
         return back()->withErrors(['login_error' => 'Username atau Password tidak sesuai.']);

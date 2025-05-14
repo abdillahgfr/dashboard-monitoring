@@ -20,7 +20,7 @@
                             <h2 class="card-title">API Rekon BKU</h2>
                         </header>
 
-                        {{-- <div class="card-body">
+                        <div class="card-body">
                             <h4>Rekapitulasi Sudah Direkon per Kolok</h4>
                             <table class="table table-responsive-md table-striped mb-0">
                                 <thead>
@@ -38,8 +38,39 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                        {{-- <div class="card-body">
+                            <!-- Flot: Bars -->
+                            <div class="chart chart-md" id="flotBars"></div>
+                        
+                            <script type="text/javascript">
+                                var flotBarsData = [
+                                    @foreach($rekapBelumRekon as $kolok => $jumlah)
+                                        ["{{ $kolok }}", {{ $jumlah }}]@if (!$loop->last),@endif
+                                    @endforeach
+                                ];
+                        
+                                $(function() {
+                                    if ($('#flotBars').get(0)) {
+                                        $.plot('#flotBars', [ flotBarsData ], {
+                                            colors: ['#0088cc'],
+                                            series: {
+                                                bars: {
+                                                    show: true,
+                                                    barWidth: 0.6,
+                                                    align: "center"
+                                                }
+                                            },
+                                            xaxis: {
+                                                mode: "categories",
+                                                tickLength: 0
+                                            }
+                                        });
+                                    }
+                                });
+                            </script>
                         </div> --}}
-
+                        
                         <div class="card-body">
                             <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools" border="1" cellpadding="10" cellspacing="0">
                                 <thead>
