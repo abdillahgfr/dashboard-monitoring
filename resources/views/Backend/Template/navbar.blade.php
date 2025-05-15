@@ -77,14 +77,14 @@
                         <a class="nav-link {{ request()->routeIs('index') ? 'nav-link-active' : '' }}"
                             href="{{ route('index') }}">
                             <i class="bx bx-home" aria-hidden="true"></i>
-                            <span>index</span>
+                            <span>Home</span>
                         </a>
                     </li>
                     <li class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">
                         <a class="nav-link {{ request()->routeIs('home') ? 'nav-link-active' : '' }}"
                             href="{{ route('home') }}">
                             <i class="bx bx-window-alt" aria-hidden="true"></i>
-                            <span>Dashboard</span>
+                            <span>Dashboard Persediaan</span>
                         </a>
                     </li>
                     <li class="nav-parent {{ request()->is('persediaanpdopd') || request()->is('persediaansekolah') || request()->is('persediaanblud') ? 'nav-active nav-expanded' : '' }}">

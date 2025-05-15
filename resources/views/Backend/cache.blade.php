@@ -18,7 +18,7 @@
                 <h4 class="text">Here are some useful links</h4>
                 <ul class="nav nav-list flex-column primary">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('home')}}"><i class="fas fa-caret-right text-dark"></i> Home</a>
+                        <a class="nav-link" href="{{route('index')}}"><i class="fas fa-caret-right text-dark"></i> Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{route('login')}}"><i class="fas fa-caret-right text-dark"></i> Login</a>

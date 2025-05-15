@@ -216,23 +216,6 @@ class NotifikasiController extends Controller
         // Add current year and previous year to the view
         $tahunList = collect([$currentYear, $previousYear]);
         
-        // Generate a list of months from January to December with rules for formatting
-        $listBulan = collect([
-            '01' => 'Januari',
-            '02' => 'Februari',
-            '03' => 'Maret',
-            '04' => 'April',
-            '05' => 'Mei',
-            '06' => 'Juni',
-            '07' => 'Juli',
-            '08' => 'Agustus',
-            '09' => 'September',
-            '10' => 'Oktober',
-            '11' => 'November',
-            '12' => 'Desember',
-        ]);
-        $currentMonth = $request->get('smt') ? array_search($request->get('smt'), $listBulan->toArray()) : date('m'); // Retrieve the 'smt' filter from the request or default to the current month
-        
         $bpadinventoryData = DB::connection('sqlsrv_2')->table('so_data2025')
             ->whereYear('periode_baso', $currentYear) // Filter by the selected year
             ->whereMonth('periode_baso', '04') // Filter by the selected or current month
@@ -464,7 +447,6 @@ class NotifikasiController extends Controller
         return view('Backend.persediaanpdopd', [
             'mergedData' => $mergedData,
             'tahunList' => $tahunList,
-            'listBulan' => $listBulan,
             'rekapSudahRekon' => $rekapSudahRekon,
             'rekapBelumRekon' => $rekapBelumRekon,
             'statusRekon' => $statusRekon

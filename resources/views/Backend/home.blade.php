@@ -8,11 +8,6 @@
         </header>
 
         <div class="inner-wrapper">
-
-            <div class="alert alert-primary alert-dismissible fade show" role="alert">
-                <strong>Welcome !</strong> Hi, {{ $user['nmunit'] }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true" aria-label="Close"></button>
-            </div>
             <!-- start: page -->
             <div class="row">
                 <div class="col-xl-4">
@@ -24,9 +19,9 @@
                                         <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
                                         <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
                                     </div>
-
                                     <h2 class="card-title">Chart Monitoring Persediaan</h2>
-                                    <p class="card-subtitle">Progress PD/OPD April</p>
+                                    <p class="card-subtitle">Progress PD/OPD
+                                        {{ \Carbon\Carbon::now()->translatedFormat('F') }}</p>
                                 </header>
                                 <section class="card card-modern card-big-info">
                                     <div class="card-body">
@@ -34,9 +29,20 @@
                                         <div class="card-body">
                                             <div class="chart chart-md" id="flotPie"></div>
                                             <script type="text/javascript">
-                                                var flotPieData = [
-                                                    { label: "Selesai", data: [[1, {{ $selesaiCount }}]], color: '#2baab1' },
-                                                    { label: "Belum Selesai", data: [[1, {{ $belumCount }}]], color: '#E36159' }
+                                                var flotPieData = [{
+                                                        label: "Selesai",
+                                                        data: [
+                                                            [1, {{ $selesaiCount }}]
+                                                        ],
+                                                        color: '#2baab1'
+                                                    },
+                                                    {
+                                                        label: "Belum Selesai",
+                                                        data: [
+                                                            [1, {{ $belumCount }}]
+                                                        ],
+                                                        color: '#E36159'
+                                                    }
                                                 ];
                                             </script>
                                         </div>
@@ -57,7 +63,8 @@
                                     </div>
 
                                     <h2 class="card-title">Chart Monitoring Persediaan</h2>
-                                    <p class="card-subtitle">Progress SEKOLAH April</p>
+                                    <p class="card-subtitle">Progress SEKOLAH
+                                        {{ \Carbon\Carbon::now()->translatedFormat('F') }}</p>
                                 </header>
                                 <section class="card card-modern card-big-info">
                                     <div class="card-body">
@@ -65,9 +72,20 @@
                                         <div class="card-body">
                                             <div class="chart chart-md" id="sekolahPie"></div>
                                             <script type="text/javascript">
-                                                var sekolahPieData = [
-                                                    { label: "Selesai", data: [[1, {{ $sekolahSudah }}]], color: '#2baab1' },
-                                                    { label: "Belum Selesai", data: [[1, {{ $sekolahBelum }}]], color: '#E36159' }
+                                                var sekolahPieData = [{
+                                                        label: "Selesai",
+                                                        data: [
+                                                            [1, {{ $sekolahSudah }}]
+                                                        ],
+                                                        color: '#2baab1'
+                                                    },
+                                                    {
+                                                        label: "Belum Selesai",
+                                                        data: [
+                                                            [1, {{ $sekolahBelum }}]
+                                                        ],
+                                                        color: '#E36159'
+                                                    }
                                                 ];
                                             </script>
                                         </div>
@@ -88,7 +106,8 @@
                                     </div>
 
                                     <h2 class="card-title">Chart Monitoring Persediaan</h2>
-                                    <p class="card-subtitle">Progress BLUD April</p>
+                                    <p class="card-subtitle">Progress BLUD
+                                        {{ \Carbon\Carbon::now()->translatedFormat('F') }}</p>
                                 </header>
                                 <section class="card card-modern card-big-info">
                                     <div class="card-body">
@@ -96,9 +115,20 @@
                                         <div class="card-body">
                                             <div class="chart chart-md" id="bludPie"></div>
                                             <script type="text/javascript">
-                                                var bludPieData = [
-                                                    { label: "Selesai", data: [[1, {{ $bludSudah }}]], color: '#2baab1' },
-                                                    { label: "Belum Selesai", data: [[1, {{ $bludBelum }}]], color: '#E36159' }
+                                                var bludPieData = [{
+                                                        label: "Selesai",
+                                                        data: [
+                                                            [1, {{ $bludSudah }}]
+                                                        ],
+                                                        color: '#2baab1'
+                                                    },
+                                                    {
+                                                        label: "Belum Selesai",
+                                                        data: [
+                                                            [1, {{ $bludBelum }}]
+                                                        ],
+                                                        color: '#E36159'
+                                                    }
                                                 ];
                                             </script>
                                         </div>
@@ -122,7 +152,8 @@
                                         <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
                                     </div>
 
-                                    <h2 class="card-title">Tabel Monitoring Persediaan April</h2>
+                                    <h2 class="card-title">Tabel Monitoring Persediaan
+                                        {{ \Carbon\Carbon::now()->translatedFormat('F') }}</h2>
                                     <p class="card-subtitle">Progress Seluruh Wilayah</p>
                                 </header>
                                 <div class="card-body">
@@ -137,7 +168,6 @@
                                                 <th>Stok Opname</th>
                                                 <th>BA Stok Fisik</th>
                                                 <th>Rekon BKU</th>
-                                                {{-- <th>Status</th> --}}
                                                 <th>Progress</th>
                                             </tr>
                                         </thead>
@@ -146,9 +176,13 @@
                                                 <tr>
                                                     <td>{{ $item->id_kolok }}</td>
                                                     <td>
-                                                        @if ($item->upb_sekolah === 'Y') SEKOLAH
-                                                        @elseif ($item->flag_blud === 'Y') BLUD
-                                                        @else PD/OPD @endif
+                                                        @if ($item->upb_sekolah === 'Y')
+                                                            SEKOLAH
+                                                        @elseif ($item->flag_blud === 'Y')
+                                                            BLUD
+                                                        @else
+                                                            PD/OPD
+                                                        @endif
                                                     </td>
                                                     <td>{{ $item->nalok }}</td>
                                                     <td>{{ $item->tahun }}</td>
@@ -168,39 +202,59 @@
                                                         @endif
                                                     </td>
                                                     <td>
-                                                        Sudah: {{ $statusRekon[$item->id_kolok]['sudah_direkon'] ?? 0 }}<br>
-                                                        Belum: {{ $statusRekon[$item->id_kolok]['belum_direkon_ba'] ?? 0 }}<br>
-                                                        Status: <strong>{{ $statusRekon[$item->id_kolok]['status'] ?? '-' }}</strong>
+                                                        Sudah:
+                                                        {{ $statusRekon[$item->id_kolok]['sudah_direkon'] ?? 0 }}<br>
+                                                        Belum:
+                                                        {{ $statusRekon[$item->id_kolok]['belum_direkon_ba'] ?? 0 }}<br>
+                                                        Status:
+                                                        <strong>{{ $statusRekon[$item->id_kolok]['status'] ?? '-' }}</strong>
                                                     </td>
                                                     <td>
                                                         @php
-                                                            $rekonBkuStatus = $statusRekon[$item->id_kolok]['status'] ?? null;
+                                                            $rekonBkuStatus =
+                                                                $statusRekon[$item->id_kolok]['status'] ?? null;
 
                                                             // Hitung jumlah kondisi yang terpenuhi
                                                             $conditionsMet = 0;
 
-                                                            if ($item->Total_SPPB_BAST == 0) $conditionsMet++; // Selesai jika 0
-                                                            if (!is_null($item->tglba_fisik) && $item->tglba_fisik !== 'No Data Found') $conditionsMet++;
-                                                            if (!is_null($item->periode_baso) && $item->periode_baso !== 'No Data Found') $conditionsMet++;
-                                                            if ($rekonBkuStatus === 'Selesai') $conditionsMet++; // Kondisi tambahan untuk status rekon BKU
+                                                            if ($item->Total_SPPB_BAST == 0) {
+                                                                $conditionsMet++;
+                                                            } // Selesai jika 0
+                                                            if (
+                                                                !is_null($item->tglba_fisik) &&
+                                                                $item->tglba_fisik !== 'No Data Found'
+                                                            ) {
+                                                                $conditionsMet++;
+                                                            }
+                                                            if (
+                                                                !is_null($item->periode_baso) &&
+                                                                $item->periode_baso !== 'No Data Found'
+                                                            ) {
+                                                                $conditionsMet++;
+                                                            }
+                                                            if ($rekonBkuStatus !== 'Belum Selesai') {
+                                                                $conditionsMet++;
+                                                            } // Kondisi tambahan untuk status rekon BKU
 
                                                             // Hitung persentase progress berdasarkan kondisi yang dipenuhi
                                                             $maxConditions = 4; // Pastikan semua kondisi dihitung dengan benar
-                                                            $progress = round(($conditionsMet / $maxConditions) * 100, 2);
+                                                            $progress = round(
+                                                                ($conditionsMet / $maxConditions) * 100,
+                                                                2,
+                                                            );
                                                         @endphp
 
-                                                        <div class="progress progress-sm progress-half-rounded m-0 mt-1 light">
+                                                        <div
+                                                            class="progress progress-sm progress-half-rounded m-0 mt-1 light">
                                                             <div class="progress-bar 
                                                                 {{ $progress == 100 ? 'progress-bar-success' : ($progress >= 50 ? 'progress-bar-warning' : 'progress-bar-danger') }}"
-                                                                role="progressbar"
-                                                                aria-valuenow="{{ $progress }}"
-                                                                aria-valuemin="0"
-                                                                aria-valuemax="100"
+                                                                role="progressbar" aria-valuenow="{{ $progress }}"
+                                                                aria-valuemin="0" aria-valuemax="100"
                                                                 style="width: {{ $progress }}%;">
                                                                 {{ $progress }}%
                                                             </div>
                                                         </div>
-                                                    </td>                                                    
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
