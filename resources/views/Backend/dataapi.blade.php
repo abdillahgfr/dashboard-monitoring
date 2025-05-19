@@ -20,57 +20,32 @@
                             <h2 class="card-title">API Rekon BKU</h2>
                         </header>
 
-                        <div class="card-body">
-                            <h4>Rekapitulasi Sudah Direkon per Kolok</h4>
-                            <table class="table table-responsive-md table-striped mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>ID Kolok</th>
-                                        <th>Jumlah Sudah Direkon</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($rekapBelumRekon as $kolok => $jumlah)
-                                        <tr>
-                                            <td>{{ $kolok }}</td>
-                                            <td>{{ $jumlah }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        {{-- <div class="card-body">
-                            <!-- Flot: Bars -->
-                            <div class="chart chart-md" id="flotBars"></div>
-                        
-                            <script type="text/javascript">
-                                var flotBarsData = [
-                                    @foreach($rekapBelumRekon as $kolok => $jumlah)
-                                        ["{{ $kolok }}", {{ $jumlah }}]@if (!$loop->last),@endif
-                                    @endforeach
-                                ];
-                        
-                                $(function() {
-                                    if ($('#flotBars').get(0)) {
-                                        $.plot('#flotBars', [ flotBarsData ], {
-                                            colors: ['#0088cc'],
-                                            series: {
-                                                bars: {
-                                                    show: true,
-                                                    barWidth: 0.6,
-                                                    align: "center"
-                                                }
-                                            },
-                                            xaxis: {
-                                                mode: "categories",
-                                                tickLength: 0
-                                            }
-                                        });
-                                    }
-                                });
-                            </script>
-                        </div> --}}
-                        
+                        <section class="card mb-2">
+                            <header class="card-header">
+                                <div class="card-actions">
+                                    <a href="#" class="card-action card-action-toggle" data-card-toggle=""></a>
+                                    <a href="#" class="card-action card-action-dismiss" data-card-dismiss=""></a>
+                                </div>
+
+                                <h2 class="card-title">Insert into DB</h2>
+                            </header>
+                            <div class="card-body">
+                                <form action="{{ route('rekonbku.store') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="mb-1 mt-1 me-1 btn btn-primary">
+                                        Tambah Data ke Table
+                                    </button>
+                                </form>
+
+                                <form action="{{ route('rekonbku.update') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="mb-1 mt-1 me-1 btn btn-info">
+                                        Update Data ke Table
+                                    </button>
+                                </form>
+                            </div>
+                        </section>
+
                         <div class="card-body">
                             <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools" border="1" cellpadding="10" cellspacing="0">
                                 <thead>

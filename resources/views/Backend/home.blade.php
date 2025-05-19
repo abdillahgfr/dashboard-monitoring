@@ -10,6 +10,18 @@
         <div class="inner-wrapper">
             <!-- start: page -->
             <div class="row">
+                <form method="GET" action="{{ url()->current() }}" class="mb-3">
+                        <div class="form-group">
+                            <label for="bulan">Pilih Bulan:</label>
+                            <select name="bulan" id="bulan" class="form-control" onchange="this.form.submit()">
+                                @foreach(range(1,12) as $num)
+                                    <option value="{{ $num }}" {{ $bulan == $num ? 'selected' : '' }}>
+                                        {{ \Carbon\Carbon::create()->month($num)->locale('id')->monthName }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </form>
                 <div class="col-xl-4">
                     <section class="card card-primary mb-4">
                         <div class="col-lg-12">
@@ -21,7 +33,7 @@
                                     </div>
                                     <h2 class="card-title">Chart Monitoring Persediaan</h2>
                                     <p class="card-subtitle">Progress PD/OPD
-                                        {{ \Carbon\Carbon::now()->translatedFormat('F') }}</p>
+                                        {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</p>
                                 </header>
                                 <section class="card card-modern card-big-info">
                                     <div class="card-body">
@@ -64,7 +76,7 @@
 
                                     <h2 class="card-title">Chart Monitoring Persediaan</h2>
                                     <p class="card-subtitle">Progress SEKOLAH
-                                        {{ \Carbon\Carbon::now()->translatedFormat('F') }}</p>
+                                        {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</p>
                                 </header>
                                 <section class="card card-modern card-big-info">
                                     <div class="card-body">
@@ -107,7 +119,7 @@
 
                                     <h2 class="card-title">Chart Monitoring Persediaan</h2>
                                     <p class="card-subtitle">Progress BLUD
-                                        {{ \Carbon\Carbon::now()->translatedFormat('F') }}</p>
+                                        {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</p>
                                 </header>
                                 <section class="card card-modern card-big-info">
                                     <div class="card-body">
@@ -153,7 +165,7 @@
                                     </div>
 
                                     <h2 class="card-title">Tabel Monitoring Persediaan
-                                        {{ \Carbon\Carbon::now()->translatedFormat('F') }}</h2>
+                                        {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</h2>
                                     <p class="card-subtitle">Progress Seluruh Wilayah</p>
                                 </header>
                                 <div class="card-body">

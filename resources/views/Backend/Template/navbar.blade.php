@@ -113,13 +113,13 @@
                             </li>
                         </ul>
                     </li>
-                    {{-- <li class="{{ request()->routeIs('api') ? 'nav-active' : '' }}">
+                    <li class="{{ request()->routeIs('api') ? 'nav-active' : '' }}">
                         <a class="nav-link {{ request()->routeIs('api') ? 'nav-link-active' : '' }}"
                             href="{{ route('api') }}">
                             <i class="bx bx-file" aria-hidden="true"></i>
                             <span>Data Rekon BKU (API)</span>
                         </a>
-                    </li> --}}
+                    </li>
                 </ul>
             </nav>
             <hr class="separator" />
