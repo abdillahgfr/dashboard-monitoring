@@ -31,6 +31,9 @@ Route::middleware(['auth.session'])->group(function () {
     Route::post('/rekonbku/store', [RekonbkuController::class, 'store'])->name('rekonbku.store');
     Route::post('/rekonbku/update', [RekonbkuController::class, 'update'])->name('rekonbku.update');
 
+    Route::post('/rekonbku/storeBelum', [RekonbkuController::class, 'storebelumRekon'])->name('rekonbku.belum');
+    Route::post('/rekonbku/updateBelum', [RekonbkuController::class, 'updatebelumRekon'])->name('rekonbku.updatebelum');
+
 });
 
 // Catch-all route for invalid pages (404)

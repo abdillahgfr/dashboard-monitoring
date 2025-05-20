@@ -33,14 +33,28 @@
                                 <form action="{{ route('rekonbku.store') }}" method="POST">
                                     @csrf
                                     <button type="submit" class="mb-1 mt-1 me-1 btn btn-primary">
-                                        Tambah Data ke Table
+                                        Tambah Data Sudah DiRekon ke Table
                                     </button>
                                 </form>
 
                                 <form action="{{ route('rekonbku.update') }}" method="POST">
                                     @csrf
                                     <button type="submit" class="mb-1 mt-1 me-1 btn btn-info">
-                                        Update Data ke Table
+                                        Update Data Sudah DiRekon ke Table
+                                    </button>
+                                </form>
+                                <hr>
+                                <form action="{{ route('rekonbku.belum') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="mb-1 mt-1 me-1 btn btn-primary">
+                                        Tambah Data Belum DiRekon ke Table
+                                    </button>
+                                </form>
+                                
+                                <form action="{{ route('rekonbku.updatebelum') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="mb-1 mt-1 me-1 btn btn-primary">
+                                        Update Data Belum DiRekon ke Table
                                     </button>
                                 </form>
                             </div>

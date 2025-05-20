@@ -179,7 +179,8 @@
                                                 <th>Notifikasi</th>
                                                 <th>Stok Opname</th>
                                                 <th>BA Stok Fisik</th>
-                                                <th>Rekon BKU</th>
+                                                <th>Rekon BKU(Selesai)</th>
+                                                <th>Rekon BKU(Belum)</th>
                                                 <th>Progress</th>
                                             </tr>
                                         </thead>
@@ -198,7 +199,7 @@
                                                     </td>
                                                     <td>{{ $item->nalok }}</td>
                                                     <td>{{ $item->tahun }}</td>
-                                                    <td>{{ $item->Total_SPPB_BAST }}</td>
+                                                    <td class="text-center">{{ $item->Total_SPPB_BAST }}</td>
                                                     <td>
                                                         @if ($item->periode_baso === 'No Data Found' || is_null($item->periode_baso))
                                                             <span class="badge badge-danger">Belum</span>
@@ -213,51 +214,42 @@
                                                             <span class="badge badge-success">Sudah</span>
                                                         @endif
                                                     </td>
-                                                    <td>
-                                                        Sudah:
-                                                        {{ $statusRekon[$item->id_kolok]['sudah_direkon'] ?? 0 }}<br>
-                                                        Belum:
-                                                        {{ $statusRekon[$item->id_kolok]['belum_direkon_ba'] ?? 0 }}<br>
-                                                        Status:
-                                                        <strong>{{ $statusRekon[$item->id_kolok]['status'] ?? '-' }}</strong>
+                                                        
+                                                    <td class="text-center">
+                                                        {{ $item->jumlah_rekon }}
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        {{ $item->jumlah_belum_rekon }}
                                                     </td>
                                                     <td>
                                                         @php
-                                                            $rekonBkuStatus =
-                                                                $statusRekon[$item->id_kolok]['status'] ?? null;
+                                                            // Status Rekon BKU berdasarkan jumlah rekonsiliasi
+                                                            $jumlahRekon = $item->jumlah_rekon ?? 0;
+                                                            $jumlahBelumRekon = $item->jumlah_belum_rekon ?? 0;
 
-                                                            // Hitung jumlah kondisi yang terpenuhi
                                                             $conditionsMet = 0;
 
                                                             if ($item->Total_SPPB_BAST == 0) {
                                                                 $conditionsMet++;
-                                                            } // Selesai jika 0
-                                                            if (
-                                                                !is_null($item->tglba_fisik) &&
-                                                                $item->tglba_fisik !== 'No Data Found'
-                                                            ) {
+                                                            }
+                                                            if (!is_null($item->tglba_fisik) && $item->tglba_fisik !== 'No Data Found') {
                                                                 $conditionsMet++;
                                                             }
-                                                            if (
-                                                                !is_null($item->periode_baso) &&
-                                                                $item->periode_baso !== 'No Data Found'
-                                                            ) {
+                                                            if (!is_null($item->periode_baso) && $item->periode_baso !== 'No Data Found') {
                                                                 $conditionsMet++;
                                                             }
-                                                            if ($rekonBkuStatus !== 'Belum Selesai') {
-                                                                $conditionsMet++;
-                                                            } // Kondisi tambahan untuk status rekon BKU
 
-                                                            // Hitung persentase progress berdasarkan kondisi yang dipenuhi
-                                                            $maxConditions = 4; // Pastikan semua kondisi dihitung dengan benar
-                                                            $progress = round(
-                                                                ($conditionsMet / $maxConditions) * 100,
-                                                                2,
-                                                            );
+                                                            // Kondisi keempat: jika belum_rekon = 0 maka dianggap selesai
+                                                            if ($jumlahBelumRekon == 0 && $jumlahRekon > 0) {
+                                                                $conditionsMet++;
+                                                            }
+
+                                                            $maxConditions = 4;
+                                                            $progress = round(($conditionsMet / $maxConditions) * 100, 2);
                                                         @endphp
 
-                                                        <div
-                                                            class="progress progress-sm progress-half-rounded m-0 mt-1 light">
+                                                        <div class="progress progress-sm progress-half-rounded m-0 mt-1 light">
                                                             <div class="progress-bar 
                                                                 {{ $progress == 100 ? 'progress-bar-success' : ($progress >= 50 ? 'progress-bar-warning' : 'progress-bar-danger') }}"
                                                                 role="progressbar" aria-valuenow="{{ $progress }}"

@@ -73,7 +73,7 @@ class LoginController extends Controller
         }
 
 
-        return back()->withErrors(['login_error' => 'Username atau Password tidak sesuai.']);
+        return back()->withErrors(['login_error' => 'Username atau Password tidak terdaftar.']);
     }
 
     public function logout()
