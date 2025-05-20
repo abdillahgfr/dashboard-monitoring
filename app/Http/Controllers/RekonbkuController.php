@@ -72,8 +72,17 @@ class RekonbkuController extends Controller
                     $kodeAkun = trim((string) ($item['KODE_AKUN'] ?? ''));
                     $key = $noBku . '|' . $realisasi . '|' . $noBukti;
 
-                    // Cek jika sudah direkon dan flag_ba == 1
-                    if (isset($dbRekonPairs[$key]) && $dbRekonPairs[$key] > 0 && isset($akunBA[$kodeAkun])) {
+                    // Default status
+                    $rekonStatus = 'Belum Direkon';
+
+                    // Cek status rekon berdasarkan 3 kunci
+                    if ($noBku && $realisasi && $noBukti && isset($dbRekonPairs[$key]) && $dbRekonPairs[$key] > 0) {
+                        $rekonStatus = 'Sudah Direkon';
+                        $dbRekonPairs[$key]--;
+                    }
+
+                    // Simpan hanya jika termasuk BA dan sudah direkon
+                    if ($rekonStatus === 'Sudah Direkon' && isset($akunBA[$kodeAkun])) {
                         $insertData[] = [
                             'id_kolok'       => $skpd->id_kolok,
                             'nalok'          => $skpd->nalok,
@@ -81,27 +90,24 @@ class RekonbkuController extends Controller
                             'tgl_post'       => $item['D_POSTING'] ?? '',
                             'kode_rekening'  => $kodeAkun,
                             'realisasi'      => $realisasi,
-                            'status_rekon'   => 'Sudah Direkon',
+                            'status_rekon'   => $rekonStatus,
                             'flag_ba'        => 1,
                             'no_bku'         => $noBku,
                             'no_bukti'       => $noBukti,
                         ];
-                        $dbRekonPairs[$key]--;
                         $dataCount++;
                     }
                 }
             }
         }
 
-        // dd($insertData);
-
-        // Insert batch per 200 untuk menghindari batas parameter SQL Server
         foreach (array_chunk($insertData, 200) as $chunk) {
             DB::connection('sqlsrv_3')->table("rekon_bku")->insert($chunk);
         }
 
-         return count($insertData) . " data sudah direkon berhasil disimpan.";
+        return count($insertData) . " data yang sudah direkon berhasil ditambahkan.";
     }
+
 
     public function update(Request $request)
     {

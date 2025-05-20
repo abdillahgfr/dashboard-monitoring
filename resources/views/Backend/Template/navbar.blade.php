@@ -25,10 +25,10 @@
                 </figure>
                 <div class="profile-info">
                     <span class="name">
-                        {{ session('user')['nm_emp'] ?? 'Akun Monitoring' }}
+                        {{ session('user')->nm_emp ?? 'Akun Monitoring' }}
                     </span>
                     <span class="role">
-                        {{ session('user')['nmunit'] ?? 'Administrator' }}
+                        {{ session('user')->status_emp ?? 'Administrator' }}
                     </span>
                     
                 </div>

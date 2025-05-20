@@ -10,7 +10,7 @@
         <div class="inner-wrapper">
 
             <div class="alert alert-primary alert-dismissible fade show" role="alert">
-                <strong>Welcome !</strong> Hi, {{ $user['nm_emp'] }}
+                <strong>Welcome !</strong> Hi, {{ $user->nm_emp }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true" aria-label="Close"></button>
             </div>
             <div class="row mt-4">
@@ -21,10 +21,10 @@
 							<section class="card">
 								<div class="card-body">
 									<div class="thumb-info mb-3">
-										<img src="{{ url('img/Sample_User_Icon.png')}}" class="rounded img-fluid" alt="{{ $user['nm_emp'] }}">
+										<img src="{{ url('img/Sample_User_Icon.png')}}" class="rounded img-fluid" alt="{{ $user->nm_emp }}">
 										<div class="thumb-info-title">
-											<span class="thumb-info-inner">{{ $user['nm_emp'] }}</span>
-											<span class="thumb-info-type">{{ $user['nmunit'] }}</span>
+											<span class="thumb-info-inner">{{ $user->nm_emp }}</span>
+											<span class="thumb-info-type">{{ $user->status_emp }}</span>
 										</div>
 									</div>
 								</div>
@@ -45,31 +45,25 @@
 											<div class="row row mb-4">
 												<div class="form-group col">
 													<label for="inputAddress">Nama</label>
-													<input type="text" class="form-control" value="{{ $user['nm_emp'] }}" readonly>
+													<input type="text" class="form-control" value="{{ $user->nm_emp }}" readonly>
 												</div>
 											</div>
 											<div class="row mb-4">
 												<div class="form-group col">
-													<label for="inputAddress2">Email</label>
-													<input type="text" class="form-control" value="{{ $user['email_emp'] }}" readonly>
-												</div>
-											</div>
-                                            <div class="row mb-4">
-												<div class="form-group col">
-													<label for="inputAddress2">Telp</label>
-													<input type="text" class="form-control" value="{{ $user['tlp_emp'] }}" readonly>
-												</div>
-											</div>
-                                            <div class="row mb-4">
-												<div class="form-group col">
-													<label for="inputAddress2">ID</label>
-													<input type="text" class="form-control" value="{{ $user['idunit'] }}" readonly>
+													<label for="inputAddress2">Status</label>
+													<input type="text" class="form-control" value="{{ $user->idgroup }}" readonly>
 												</div>
 											</div>
                                             <div class="row mb-4">
 												<div class="form-group col">
 													<label for="inputAddress2">Unit</label>
-													<input type="text" class="form-control" value="{{ $user['nmunit'] }}" readonly>
+													<input type="text" class="form-control" value="{{ $user->skpd }}" readonly>
+												</div>
+											</div>
+											<div class="row mb-4">
+												<div class="form-group col">
+													<label for="inputAddress2">Akses</label>
+													<input type="text" class="form-control" value="{{ $user->fitur_akses }}" readonly>
 												</div>
 											</div>
 										</form>

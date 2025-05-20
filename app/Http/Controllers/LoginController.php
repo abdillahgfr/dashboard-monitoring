@@ -13,31 +13,65 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
+    private $urlLogin = 'https://jakaset.jakarta.go.id/api_login/api';
+
+    private function callUser($username, $password, $tahun = '', $safety = false)
+    {
+        $user = null;
+        try {
+            $opts = [
+                'http' => [
+                    'method'  => 'POST',
+                    'header'  => 'Content-Type: application/x-www-form-urlencoded',
+                    'content' => http_build_query([
+                        'password' => $password,
+                        'tahun'    => $tahun,
+                        'username' => $username,
+                        // 'sistem'   => "Jakaset/" . env('SERVER'),
+                    ]),
+                ],
+            ];
+            $context = stream_context_create($opts);
+            $user    = @file_get_contents($this->urlLogin . '/auth', false, $context);
+            if (empty($user)) {
+                throw new \Exception("Gagal melakukan login", 1);
+            }
+            $user = json_decode($user);
+            return $user;
+        } catch (\Throwable $th) {
+            if ($safety == false) {
+                throw $th;
+            }
+        }
+        return empty($user) ? null : $user;
+    }
+
+    public function authenticate($username, $password, $tahun = '')
+    {
+        $user = $this->callUser($username, $password, $tahun, true);
+        if (!$user && is_numeric($tahun)) {
+            $user = $this->callUser($username, $password, $tahun + 1, true);
+        }
+        return $user;
+    }
+
     public function loginApi(Request $request)
     {
-        $response = Http::withOptions(['verify' => false])
-        ->asForm()
-        ->post('https://jakaset.jakarta.go.id/reklame-api/st/api/auth/login-cms', [
-            'username' => $request->input('username'),
-            'password' => $request->input('password'),
-        ]);
+        $username = $request->input('username');
+        $password = $request->input('password');
+        $tahun = $request->input('tahun', '');
 
-        // $data = $response->json();
-        $result = json_decode($response, true);
+        $user = $this->authenticate($username, $password, $tahun);
 
-        // Check if login is successful and token exists
-        if (isset($result['success']) && $result['success'] === true && isset($result['data']['api_token'])) {
-            // Save user info and token in session
+        if ($user && isset($user->success) && $user->code == 200) {
+            // Store user data in session if needed
             session([
-                'api_token' => $result['data']['api_token'],
-                'user' => $result['data']['user'],
-                'roles' => $result['data']['data_mapping_roles'],
-                'permissions' => $result['data']['permissions'],
+                'user' => $user->user,
             ]);
 
-            // Redirect to dashboard or other protected route
             return redirect()->route('index')->with('success', 'Login successful!');
         }
+
 
         return back()->withErrors(['login_error' => 'Username atau Password tidak sesuai.']);
     }

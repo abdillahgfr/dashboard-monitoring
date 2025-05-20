@@ -10,15 +10,15 @@ class HomeController extends Controller
 
     public function home()
     {
-
         $user = session('user');
-        
+
         if (!$user) {
             return redirect()->route('login')->withErrors(['login_error' => 'Please log in first.']);
         }
-        
+
         return view('Backend.index', compact('user'));
     }
+
 
     public function notFound()
     {

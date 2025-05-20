@@ -57,7 +57,7 @@
                                         <th>Kode Rekening</th>
                                         <th>Realisasi</th>
                                         <th>Status Rekon</th>
-                                        <th>Flag BA</th> <!-- Tambahan kolom baru -->
+                                        <th>Flag BA</th>
                                     </tr>
                                 </thead>
                                 <tbody>

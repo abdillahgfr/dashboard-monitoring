@@ -37,6 +37,23 @@
                         </div>
                     </div>
 
+                    <div class="form-group mb-3">
+                        <label>Tahun</label>
+                        <div class="input-group">
+                            <select name="tahun" class="form-control form-control-md" required>
+                                @php
+                                    $currentYear = date('Y');
+                                @endphp
+                                @for ($year = $currentYear; $year >= $currentYear - 5; $year--)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endfor
+                            </select>
+                            <span class="input-group-text">
+                                <i class="bx bx-calendar text-4"></i>
+                            </span>
+                        </div>
+                    </div>
+
                     <hr>
 
                     <div class="mb-1 text-center">
@@ -66,4 +83,5 @@
     });
 </script>
 @endif
+
 
