@@ -25,87 +25,6 @@ class HomeController extends Controller
         return view('Backend.notfound');
     }
 
-    private function getRekapBelumRekon($tahun, $maxData = 10000)
-    {
-        $username = 'bpad';
-        $password = 'bp4d';
-        $dataCount = 0;
-        $rekapBelumRekon = [];
-
-        $kodeSkpdList = DB::connection('sqlsrv')->table('master_profile_detail')
-            ->where('tahun', $tahun)
-            ->where('sts', '1')
-            ->whereNull('upb_sekolah')
-            ->select('kode_skpd', 'id_kolok', 'nalok', 'id_kolokskpd')
-            ->distinct()
-            ->get();
-
-        // Ambil data rekonsiliasi dari DB
-        $dbRekonPairs = DB::connection('sqlsrv_2')
-            ->table("rekonbku_detail$tahun")
-            ->select('no_bku', 'realisasi', 'no_bukti', DB::raw('COUNT(*) as jumlah'))
-            ->groupBy('no_bku', 'realisasi', 'no_bukti')
-            ->get()
-            ->reduce(function ($carry, $item) {
-                $key = trim((string) $item->no_bku) . '|' .
-                    number_format((float) $item->realisasi, 2, '.', '') . '|' .
-                    trim((string) $item->no_bukti);
-                $carry[$key] = $item->jumlah;
-                return $carry;
-            }, []);
-
-        // Ambil akun dengan flag_ba = 1
-        $akunBA = DB::connection('sqlsrv_2')
-            ->table('glo_katbrg')
-            ->where('flag_ba', 1)
-            ->pluck('kd_akun')
-            ->map(fn($val) => trim((string) $val))
-            ->toArray();
-        $akunBA = array_flip($akunBA); // array lookup
-
-        foreach ($kodeSkpdList as $skpd) {
-            if ($dataCount >= $maxData) break;
-
-            $response = Http::withBasicAuth($username, $password)
-                ->withOptions(['verify' => false, 'timeout' => 30, 'connect_timeout' => 10])
-                ->get('https://soadki.jakarta.go.id/rest/gov/dki/sipkd/realisasipernobukti2/ws', [
-                    'skpd' => $skpd->kode_skpd,
-                    'tahun' => $tahun,
-                ]);
-
-            if ($response->successful()) {
-                $results = $response->json()['results'] ?? [];
-
-                foreach ($results as $item) {
-                    if ($dataCount >= $maxData) break 2;
-
-                    $noBku = trim((string) ($item['I_BKUNO'] ?? ''));
-                    $realisasi = number_format((float) ($item['REALISASI'] ?? 0), 2, '.', '');
-                    $noBukti = trim((string) ($item['I_DOC_BUKTI'] ?? ''));
-                    $key = $noBku . '|' . $realisasi . '|' . $noBukti;
-                    $kodeAkun = trim((string) ($item['KODE_AKUN'] ?? ''));
-
-                    // Hanya proses data jika akun termasuk BA
-                    if (!isset($akunBA[$kodeAkun])) {
-                        continue;
-                    }
-
-                    if (!(isset($dbRekonPairs[$key]) && $dbRekonPairs[$key] > 0)) {
-                        $kolok = $skpd->id_kolok;
-                        $rekapBelumRekon[$kolok] = ($rekapBelumRekon[$kolok] ?? 0) + 1;
-                    } else {
-                        $dbRekonPairs[$key]--;
-                    }
-
-                    $dataCount++;
-                }
-            }
-        }
-
-        return $rekapBelumRekon;
-    }
-
-
     public function index()
     {
         $user = session('user');
@@ -145,20 +64,23 @@ class HomeController extends Controller
             ->keyBy('kolok');
 
 
-        // Ambil jumlah data rekon dari sqlsrv_3 (rekon_bku)
+        // Ambil jumlah data rekon dari sqlsrv_3 (rekon_bku) berdasarkan tahun dan bulan <= bulan yang dipilih
         $rekonBku = DB::connection('sqlsrv_3')
             ->table('rekon_bku')
             ->select('id_kolok', DB::raw('COUNT(*) as jumlah_rekon'))
+            ->whereYear('tgl_post', $tahun)
+            ->whereBetween(DB::raw('MONTH(tgl_post)'), [1, $bulan])
             ->groupBy('id_kolok')
             ->pluck('jumlah_rekon', 'id_kolok');
 
-        // Ambil jumlah data belum direkon dari sqlsrv_3 (rekon_bku_belum)
+        // Ambil jumlah data belum direkon dari sqlsrv_3 (rekon_bku_belum) berdasarkan tahun dan bulan <= bulan yang dipilih
         $rekonBkuBelum = DB::connection('sqlsrv_3')
             ->table('rekon_bku_belum')
             ->select('id_kolok', DB::raw('COUNT(*) as jumlah_belum_rekon'))
+            ->whereYear('tgl_post', $tahun)
+            ->whereBetween(DB::raw('MONTH(tgl_post)'), [1, $bulan])
             ->groupBy('id_kolok')
             ->pluck('jumlah_belum_rekon', 'id_kolok');
-
 
         // Gabungkan semua data
         $mergedData = $bpadmasterData->map(function ($master) use ($bpadinventoryData, $rekonBku, $rekonBkuBelum) {
@@ -317,7 +239,7 @@ class HomeController extends Controller
         $mergedData = $mergedData->map(function ($item) use (
             $sppb, $bastSPPB, $bastPHK3, $bastHIBAH, $bastTRANSFER,
             $reviewTambah, $instTambah, $auditTambah, $smt1Tambah, $smt2Tambah,
-            $reviewKurang, $insKurang, $auditKurang, $smt1Kurang, $smt2Kurang
+            $reviewKurang, $insKurang, $auditKurang, $smt1Kurang, $smt2Kurang,
         ) {
             $id = $item->id_kolok;
             $item->SPPB1 = $sppb[0][$id]->jumlah ?? 0;
@@ -363,7 +285,7 @@ class HomeController extends Controller
                     ($item->Total_SPPB_BAST == 0) &&
                     ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
                     ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
-                    ($jumlahBelumRekon == 0 && $jumlahRekon > 0)
+                    ($jumlahBelumRekon == 0 && $jumlahRekon > 0 || $jumlahRekon == 0)
                 ) {
                     $selesaiCount++;
                 } else {

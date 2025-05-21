@@ -22,7 +22,7 @@
                 <section class="body-sign">
                     <div class="center-sign">
                         <a href="{{ route('home') }}" class="logo float-start">
-                            <img src="{{ asset('img/Bpad-persediaan.png') }}" width="290" height="75" alt="Persediaan Admin" />
+                            <img src="{{ asset('img/header-persediaan.png') }}" width="290" height="80fgICEDlCTI" alt="Persediaan Admin" />
                         </a>
                         <div class="panel card-sign">
                             <div class="card-title-sign mt-3 text-end">

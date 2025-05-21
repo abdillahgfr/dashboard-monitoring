@@ -108,7 +108,6 @@ class RekonbkuController extends Controller
         return count($insertData) . " data yang sudah direkon berhasil ditambahkan.";
     }
 
-
     public function update(Request $request)
     {
         $tahun = '2025';
@@ -409,7 +408,5 @@ class RekonbkuController extends Controller
 
         return count($insertData) . " data belum direkon berhasil diupdate.";
     }
-
-
 
 }

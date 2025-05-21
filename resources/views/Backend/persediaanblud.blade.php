@@ -10,6 +10,59 @@
         <div class="inner-wrapper">
             <!-- start: page -->
             <div class="row">
+                <form method="GET" action="{{ url()->current() }}" class="mb-3">
+                    <div class="form-group">
+                        <label for="bulan">Pilih Bulan:</label>
+                        <select name="bulan" id="bulan" class="form-control" onchange="this.form.submit()">
+                            @foreach(range(1,12) as $num)
+                                <option value="{{ $num }}" {{ $bulan == $num ? 'selected' : '' }}>
+                                    {{ \Carbon\Carbon::create()->month($num)->locale('id')->monthName }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </form>
+                <section class="card card-primary mb-4">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <header class="card-header">
+                                <div class="card-actions">
+                                    <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
+                                    <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
+                                </div>
+
+                                <h2 class="card-title">Chart Monitoring Persediaan</h2>
+                                <p class="card-subtitle">Progress BLUD
+                                    {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</p>
+                            </header>
+                            <section class="card card-modern card-big-info">
+                                <div class="card-body">
+                                    <!-- Tab 3: BLUD -->
+                                    <div class="card-body">
+                                        <div class="chart chart-md" id="bludPie"></div>
+                                        <script type="text/javascript">
+                                            var bludPieData = [{
+                                                    label: "Selesai",
+                                                    data: [
+                                                        [1, {{ $bludSudah }}]
+                                                    ],
+                                                    color: '#2baab1'
+                                                },
+                                                {
+                                                    label: "Belum Selesai",
+                                                    data: [
+                                                        [1, {{ $bludBelum }}]
+                                                    ],
+                                                    color: '#E36159'
+                                                }
+                                            ];
+                                        </script>
+                                    </div>
+                                </div>
+                            </section>
+                        </section>
+                    </div>
+                </section>
                 <div class="col-xl-12">
                     <section class="card">
                         <header class="card-header card-header-transparent">
@@ -20,31 +73,6 @@
                             <h2 class="card-title">Laporan Sistem Persediaan BLUD - April {{ now()->year }}</h2>
                         </header>
                         <div class="card-body">
-                            {{-- <form method="GET" action="{{ url('/notifikasi') }}">
-                                <div class="form-group">
-                                    <select name="tahun" class="form-control">
-                                        <option value="">Pilih Tahun</option>
-                                        @foreach ($tahunList as $year)
-                                            <option value="{{ $year }}"
-                                                {{ request('tahun') == $year ? 'selected' : '' }}>{{ $year }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-
-                                    <select name="smt" class="form-control mt-2">
-                                        <option value="">Pilih Bulan</option>
-                                        @foreach ($listBulan as $bulan)
-                                            <option value="{{ is_array($bulan) && array_key_exists('value', $bulan) ? $bulan['value'] : $bulan }}"
-                                                {{ request('smt') == (is_array($bulan) && array_key_exists('value', $bulan) ? $bulan['value'] : $bulan) ? 'selected' : '' }}>
-                                                {{ is_array($bulan) && array_key_exists('label', $bulan) ? $bulan['label'] : $bulan }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                   
-                                    <button type="submit" class="btn btn-primary mt-2">Filter</button>
-                                    <a href="{{ url('/notifikasi') }}" class="btn btn-secondary mt-2">Clear</a>
-                                </div>
-                            </form> --}}
                             <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools">
                                 <thead>
                                     <tr>
@@ -56,7 +84,8 @@
                                         <th>Stok Opname</th>
                                         <th>BA Stok Fisik</th>
                                         <th>No BA Fisik</th>
-                                        <th>Rekon BKU Selesai</th>
+                                        <th>Rekon BKU (Selesai)</th>
+                                        <th>Rekon BKU (Belum)</th>
                                         <th>Status</th>
 
                                     </tr>
@@ -89,28 +118,49 @@
                                                     @endif
                                                 </td>
                                                 <td>{{ $item->no_bafisik ?? 'No BA Fisik Found' }}</td>
-                                                <td>
-                                                    Sudah: {{ $statusRekon[$item->id_kolok]['sudah_direkon'] ?? 0 }}<br>
-                                                    Belum: {{ $statusRekon[$item->id_kolok]['belum_direkon_ba'] ?? 0 }}<br>
-                                                    Status: <strong>{{ $statusRekon[$item->id_kolok]['status'] ?? '-' }}</strong>
-                                                </td>
+                                                <td class="text-center">
+                                                        {{ $item->jumlah_rekon }}
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        {{ $item->jumlah_belum_rekon }}
+                                                    </td>
                                                 <td>
                                                     @php
-                                                        $rekonBkuStatus = $statusRekon[$item->id_kolok]['status'] ?? null;
+                                                        // Status Rekon BKU berdasarkan jumlah rekonsiliasi
+                                                        $jumlahRekon = $item->jumlah_rekon ?? 0;
+                                                        $jumlahBelumRekon = $item->jumlah_belum_rekon ?? 0;
 
-                                                        // Jika salah satu dari kondisi ini TIDAK memenuhi, maka statusnya BELUM
-                                                        $isBelum = 
-                                                            ($item->Total_SPPB_BAST > 0) || 
-                                                            ($item->tglba_fisik === 'No Data Found') || 
-                                                            ($item->periode_baso === 'No Data Found') || 
-                                                            ($rekonBkuStatus === 'Belum Selesai');
+                                                        $conditionsMet = 0;
+
+                                                        if ($item->Total_SPPB_BAST == 0) {
+                                                            $conditionsMet++;
+                                                        }
+                                                        if (!is_null($item->tglba_fisik) && $item->tglba_fisik !== 'No Data Found') {
+                                                            $conditionsMet++;
+                                                        }
+                                                        if (!is_null($item->periode_baso) && $item->periode_baso !== 'No Data Found') {
+                                                            $conditionsMet++;
+                                                        }
+
+                                                        // Kondisi keempat: jika belum_rekon = 0 maka dianggap selesai
+                                                        if ($jumlahBelumRekon == 0 && $jumlahRekon > 0 | $jumlahRekon == 0) {
+                                                            $conditionsMet++;
+                                                        }
+
+                                                        $maxConditions = 4;
+                                                        $progress = round(($conditionsMet / $maxConditions) * 100, 2);
                                                     @endphp
 
-                                                    @if ($isBelum)
-                                                        <span class="badge badge-danger">Belum</span>
-                                                    @else
-                                                        <span class="badge badge-success">Sudah</span>
-                                                    @endif
+                                                    <div class="progress progress-sm progress-half-rounded m-0 mt-1 light">
+                                                        <div class="progress-bar 
+                                                            {{ $progress == 100 ? 'progress-bar-success' : ($progress >= 50 ? 'progress-bar-warning' : 'progress-bar-danger') }}"
+                                                            role="progressbar" aria-valuenow="{{ $progress }}"
+                                                            aria-valuemin="0" aria-valuemax="100"
+                                                            style="width: {{ $progress }}%;">
+                                                            {{ $progress }}%
+                                                        </div>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endif

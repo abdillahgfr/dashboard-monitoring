@@ -199,7 +199,21 @@
                                                     </td>
                                                     <td>{{ $item->nalok }}</td>
                                                     <td>{{ $item->tahun }}</td>
-                                                    <td class="text-center">{{ $item->Total_SPPB_BAST }}</td>
+                                                    <td class="text-center">
+                                                        @php
+                                                            // Ambil bulan yang dipilih dari request
+                                                            $selectedMonth = (int) request('bulan', $bulan);
+
+                                                            // Jika bulan pada data <= bulan yang dipilih, tampilkan nilainya, jika tidak tampilkan 0
+                                                            // Asumsi $item->bulan adalah field bulan pada data, jika tidak ada, sesuaikan dengan field yang benar
+                                                            if (isset($item->bulan)) {
+                                                                echo ($item->bulan <= $selectedMonth) ? $item->Total_SPPB_BAST : 0;
+                                                            } else {
+                                                                // Jika tidak ada field bulan, tampilkan langsung (default behavior)
+                                                                echo $item->Total_SPPB_BAST;
+                                                            }
+                                                        @endphp
+                                                    </td>
                                                     <td>
                                                         @if ($item->periode_baso === 'No Data Found' || is_null($item->periode_baso))
                                                             <span class="badge badge-danger">Belum</span>
@@ -241,7 +255,7 @@
                                                             }
 
                                                             // Kondisi keempat: jika belum_rekon = 0 maka dianggap selesai
-                                                            if ($jumlahBelumRekon == 0 && $jumlahRekon > 0) {
+                                                            if ($jumlahBelumRekon == 0 && $jumlahRekon > 0 | $jumlahRekon == 0) {
                                                                 $conditionsMet++;
                                                             }
 

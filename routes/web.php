@@ -7,14 +7,12 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RekonbkuController;
 use Illuminate\Support\Facades\Artisan;
 
-
-
 Route::get('/c', function () {
     Artisan::call('optimize:clear');
-    return view('Backend.cache'); // Displays the notfound page
+    return view('Backend.cache');
 })->name('clear.cache');
 
-
+//Login and Logout
 Route::get('/login', [LoginController::class, 'showForm'])->name('login');
 Route::post('/login', [LoginController::class, 'loginApi'])->name('login.submit');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -36,8 +34,7 @@ Route::middleware(['auth.session'])->group(function () {
 
 });
 
-// Catch-all route for invalid pages (404)
 Route::fallback(function () {
-    return view('Backend.notfound'); // Displays the notfound page
+    return view('Backend.notfound'); // 404 page
 });
 
