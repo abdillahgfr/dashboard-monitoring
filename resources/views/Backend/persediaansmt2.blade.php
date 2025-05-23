@@ -4,7 +4,7 @@
     <!-- Defines the 'content' section -->
     <section role="main" class="content-body">
         <header class="page-header">
-            <h2>Monitoring Persediaan</h2>
+            <h2>Monitoring Persediaan Semester 1</h2>
         </header>
 
         <div class="inner-wrapper">

@@ -16,7 +16,7 @@
             <div class="row mt-4">
 					<!-- start: page -->
 					<div class="row">
-						<div class="col-lg-4 col-xl-3 mb-4 mb-xl-0">
+						<div class="col-lg-4 col-xl-4 mb-4 mb-xl-0">
 
 							<section class="card">
 								<div class="card-body">
@@ -30,7 +30,7 @@
 								</div>
 							</section>
 						</div>
-						<div class="col-lg-8 col-xl-9">
+						<div class="col-lg-8 col-xl-8">
 
 							<div class="tabs">
 								<ul class="nav nav-tabs tabs-primary">

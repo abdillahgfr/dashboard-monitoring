@@ -4,24 +4,12 @@
     <!-- Defines the 'content' section -->
     <section role="main" class="content-body">
         <header class="page-header">
-            <h2>Monitoring Persediaan</h2>
+            <h2>Monitoring Persediaan Semester 1</h2>
         </header>
 
         <div class="inner-wrapper">
             <!-- start: page -->
             <div class="row">
-                <form method="GET" action="{{ url()->current() }}" class="mb-3">
-                        <div class="form-group">
-                            <label for="bulan">Pilih Bulan:</label>
-                            <select name="bulan" id="bulan" class="form-control" onchange="this.form.submit()">
-                                @foreach(range(1,12) as $num)
-                                    <option value="{{ $num }}" {{ $bulan == $num ? 'selected' : '' }}>
-                                        {{ \Carbon\Carbon::create()->month($num)->locale('id')->monthName }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </form>
                 <div class="col-xl-4">
                     <section class="card card-primary mb-4">
                         <div class="col-lg-12">
@@ -32,8 +20,7 @@
                                         <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
                                     </div>
                                     <h2 class="card-title">Chart Monitoring Persediaan</h2>
-                                    <p class="card-subtitle">Progress PD/OPD
-                                        {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</p>
+                                    <p class="card-subtitle">Progress PD/OPD</p>
                                 </header>
                                 <section class="card card-modern card-big-info">
                                     <div class="card-body">
@@ -75,8 +62,7 @@
                                     </div>
 
                                     <h2 class="card-title">Chart Monitoring Persediaan</h2>
-                                    <p class="card-subtitle">Progress SEKOLAH
-                                        {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</p>
+                                    <p class="card-subtitle">Progress SEKOLAH</p>
                                 </header>
                                 <section class="card card-modern card-big-info">
                                     <div class="card-body">
@@ -118,8 +104,7 @@
                                     </div>
 
                                     <h2 class="card-title">Chart Monitoring Persediaan</h2>
-                                    <p class="card-subtitle">Progress BLUD
-                                        {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</p>
+                                    <p class="card-subtitle">Progress BLUD</p>
                                 </header>
                                 <section class="card card-modern card-big-info">
                                     <div class="card-body">
@@ -163,9 +148,6 @@
                                         <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
                                         <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
                                     </div>
-
-                                    <h2 class="card-title">Tabel Monitoring Persediaan
-                                        {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</h2>
                                     <p class="card-subtitle">Progress Seluruh Wilayah</p>
                                 </header>
                                 <div class="card-body">
@@ -202,7 +184,7 @@
                                                     <td class="text-center">
                                                         @php
                                                             // Ambil bulan yang dipilih dari request
-                                                            $selectedMonth = (int) request('bulan', $bulan);
+                                                            $selectedMonth = (int) request('bulan', );
 
                                                             // Jika bulan pada data <= bulan yang dipilih, tampilkan nilainya, jika tidak tampilkan 0
                                                             // Asumsi $item->bulan adalah field bulan pada data, jika tidak ada, sesuaikan dengan field yang benar

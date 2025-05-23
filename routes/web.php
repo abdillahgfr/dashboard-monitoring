@@ -25,6 +25,10 @@ Route::middleware(['auth.session'])->group(function () {
     Route::get('/persediaansekolah', [NotifikasiController::class, 'showSekolah'])->name('persediaansekolah');
     Route::get('/persediaanblud', [NotifikasiController::class, 'showBlud'])->name('persediaanblud');
 
+    Route::get('/persediaansemester1', [NotifikasiController::class, 'semester1'])->name('persediaansmt1');
+    Route::get('/persediaansemester2', [NotifikasiController::class, 'semester2'])->name('persediaansmt2');
+    
+
     Route::get('/data-api', [NotifikasiController::class, 'getData'])->name('api');
     Route::post('/rekonbku/store', [RekonbkuController::class, 'store'])->name('rekonbku.store');
     Route::post('/rekonbku/update', [RekonbkuController::class, 'update'])->name('rekonbku.update');

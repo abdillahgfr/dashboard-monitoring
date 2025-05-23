@@ -205,7 +205,7 @@ class RekonbkuController extends Controller
 
         DB::connection('sqlsrv_3')->table("rekon_bku")->insert($insertData);
 
-        return count($insertData) . " data sudah direkon berhasil diupdate.";
+        return redirect()->back()->with('success', count($insertData) . " data sudah direkon berhasil diupdate.");
     }
 
     public function storeBelumRekon(Request $request)

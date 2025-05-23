@@ -95,24 +95,39 @@
                         <ul class="nav nav-children">
                             <li class="{{ request()->is('persediaanpdopd') ? 'nav-active' : '' }}">
                                 <a class="nav-link {{ request()->is('persediaanpdopd') ? 'nav-link-active' : '' }}" href="/persediaanpdopd">
-                                    <i class="bx bx-cube" aria-hidden="true"></i>
                                     <span>PD/OPD</span>
                                 </a>
                             </li>
                             <li class="{{ request()->is('persediaansekolah') ? 'nav-active' : '' }}">
                                 <a class="nav-link {{ request()->is('persediaansekolah') ? 'nav-link-active' : '' }}" href="/persediaansekolah">
-                                    <i class="bx bx-cube" aria-hidden="true"></i>
                                     <span>SEKOLAH</span>
                                 </a>
                             </li>
                             <li class="{{ request()->is('persediaanblud') ? 'nav-active' : '' }}">
                                 <a class="nav-link {{ request()->is('persediaanblud') ? 'nav-link-active' : '' }}" href="/persediaanblud">
-                                    <i class="bx bx-cube" aria-hidden="true"></i>
                                     <span>BLUD</span>
                                 </a>
                             </li>
                         </ul>
                     </li>
+                    {{-- <li class="nav-parent {{ request()->is('persediaansmt1') || request()->is('persediaansmt2') ? 'nav-active nav-expanded' : '' }}">
+                        <a class="nav-link" href="#">
+                            <i class="bx bx-layout" aria-hidden="true"></i>
+                            <span>Monitoring Semesteran</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="{{ request()->is('persediaansmt1') ? 'nav-active' : '' }}">
+                                <a class="nav-link {{ request()->is('persediaansmt1') ? 'nav-link-active' : '' }}" href="/persediaansemester1">
+                                    <span>Laporan Semester 1</span>
+                                </a>
+                            </li>
+                            <li class="{{ request()->is('persediaansmt2') ? 'nav-active' : '' }}">
+                                <a class="nav-link {{ request()->is('persediaansmt2') ? 'nav-link-active' : '' }}" href="/persediaansemester2">
+                                    <span>Laporan Semester 2</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li> --}}
                     <li class="{{ request()->routeIs('api') ? 'nav-active' : '' }}">
                         <a class="nav-link {{ request()->routeIs('api') ? 'nav-link-active' : '' }}"
                             href="{{ route('api') }}">

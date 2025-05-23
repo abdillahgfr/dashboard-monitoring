@@ -144,7 +144,7 @@
                                                         }
 
                                                         // Kondisi keempat: jika belum_rekon = 0 maka dianggap selesai
-                                                        if ($jumlahBelumRekon == 0 && $jumlahRekon > 0 | $jumlahRekon == 0) {
+                                                        if ($jumlahBelumRekon == 0 && $jumlahRekon >= 0 ) {
                                                             $conditionsMet++;
                                                         }
 

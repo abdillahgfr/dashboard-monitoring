@@ -309,7 +309,7 @@ class HomeController extends Controller
                     ($item->Total_SPPB_BAST == 0) &&
                     ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
                     ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
-                    ($jumlahBelumRekon == 0 && $jumlahRekon > 0 || $jumlahRekon == 0)
+                    ($jumlahBelumRekon == 0 && $jumlahRekon >= 0)
                 ) {
                     $bludSudah++;
                 } else {
