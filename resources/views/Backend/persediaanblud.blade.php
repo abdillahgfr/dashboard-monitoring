@@ -12,8 +12,8 @@
             <div class="row">
                 <form method="GET" action="{{ url()->current() }}" class="mb-3">
                     <div class="form-group">
-                        <label for="bulan">Pilih Bulan:</label>
-                        <select name="bulan" id="bulan" class="form-control" onchange="this.form.submit()">
+                        <label for="bulan">Pilih Bulan:</label><br>
+                        <select name="bulan" id="bulan" class="mb-1 mt-1 me-1 btn btn-default dropdown-toggle show" onchange="this.form.submit()">
                             @foreach(range(1,12) as $num)
                                 <option value="{{ $num }}" {{ $bulan == $num ? 'selected' : '' }}>
                                     {{ \Carbon\Carbon::create()->month($num)->locale('id')->monthName }}
@@ -22,47 +22,6 @@
                         </select>
                     </div>
                 </form>
-                <section class="card card-primary mb-4">
-                    <div class="col-lg-12">
-                        <section class="card">
-                            <header class="card-header">
-                                <div class="card-actions">
-                                    <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
-                                    <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
-                                </div>
-
-                                <h2 class="card-title">Chart Monitoring Persediaan</h2>
-                                <p class="card-subtitle">Progress BLUD
-                                    {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</p>
-                            </header>
-                            <section class="card card-modern card-big-info">
-                                <div class="card-body">
-                                    <!-- Tab 3: BLUD -->
-                                    <div class="card-body">
-                                        <div class="chart chart-md" id="bludPie"></div>
-                                        <script type="text/javascript">
-                                            var bludPieData = [{
-                                                    label: "Selesai",
-                                                    data: [
-                                                        [1, {{ $bludSudah }}]
-                                                    ],
-                                                    color: '#2baab1'
-                                                },
-                                                {
-                                                    label: "Belum Selesai",
-                                                    data: [
-                                                        [1, {{ $bludBelum }}]
-                                                    ],
-                                                    color: '#E36159'
-                                                }
-                                            ];
-                                        </script>
-                                    </div>
-                                </div>
-                            </section>
-                        </section>
-                    </div>
-                </section>
                 <div class="col-xl-12">
                     <section class="card">
                         <header class="card-header card-header-transparent">
@@ -70,7 +29,7 @@
                                 <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
                             </div>
 
-                            <h2 class="card-title">Laporan Sistem Persediaan BLUD - April {{ now()->year }}</h2>
+                            <h2 class="card-title">Laporan Sistem Persediaan BLUD -  {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }} 2025</h2>
                         </header>
                         <div class="card-body">
                             <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools">

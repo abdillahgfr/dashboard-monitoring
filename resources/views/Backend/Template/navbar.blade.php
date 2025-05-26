@@ -110,24 +110,24 @@
                             </li>
                         </ul>
                     </li>
-                    {{-- <li class="nav-parent {{ request()->is('persediaansmt1') || request()->is('persediaansmt2') ? 'nav-active nav-expanded' : '' }}">
+                    <li class="nav-parent {{ request()->routeIs('persediaansmt1') || request()->routeIs('persediaansmt2') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">
                             <i class="bx bx-layout" aria-hidden="true"></i>
                             <span>Monitoring Semesteran</span>
                         </a>
                         <ul class="nav nav-children">
-                            <li class="{{ request()->is('persediaansmt1') ? 'nav-active' : '' }}">
-                                <a class="nav-link {{ request()->is('persediaansmt1') ? 'nav-link-active' : '' }}" href="/persediaansemester1">
+                            <li class="{{ request()->routeIs('persediaansmt1') ? 'nav-active' : '' }}">
+                                <a class="nav-link {{ request()->routeIs('persediaansmt1') ? 'nav-link-active' : '' }}" href="{{ route('persediaansmt1') }}">
                                     <span>Laporan Semester 1</span>
                                 </a>
                             </li>
-                            <li class="{{ request()->is('persediaansmt2') ? 'nav-active' : '' }}">
-                                <a class="nav-link {{ request()->is('persediaansmt2') ? 'nav-link-active' : '' }}" href="/persediaansemester2">
+                            <li class="{{ request()->routeIs('persediaansmt2') ? 'nav-active' : '' }}">
+                                <a class="nav-link {{ request()->routeIs('persediaansmt2') ? 'nav-link-active' : '' }}" href="{{ route('persediaansmt2') }}">
                                     <span>Laporan Semester 2</span>
                                 </a>
                             </li>
                         </ul>
-                    </li> --}}
+                    </li>
                     <li class="{{ request()->routeIs('api') ? 'nav-active' : '' }}">
                         <a class="nav-link {{ request()->routeIs('api') ? 'nav-link-active' : '' }}"
                             href="{{ route('api') }}">
