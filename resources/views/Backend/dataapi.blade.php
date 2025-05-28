@@ -10,18 +10,17 @@
         <div class="inner-wrapper">
             <!-- start: page -->
             <div class="row">
-                <div class="col-xl-12">
-                    <section class="card">
-                        <section class="card mb-2">
-                            <header class="card-header">
-                                <div class="card-actions">
-                                    <a href="#" class="card-action card-action-toggle" data-card-toggle=""></a>
-                                    <a href="#" class="card-action card-action-dismiss" data-card-dismiss=""></a>
-                                </div>
-
-                                <h2 class="card-title">Load Content</h2>
-                            </header>
-                            <div class="card-body">
+                <div class="col-xl-12"> 
+                    <section class="card card-primary mb-4">
+                        <header class="card-header">
+                            <div class="card-actions">
+                                <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
+                                <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
+                            </div>
+                            <h2 class="card-title">Tabel API Rekon BKU</h2>
+                            <p class="card-subtitle">Progress Seluruh Wilayah</p>
+                        </header>
+                        {{-- <div class="card-body">
                                 <div class="col-6">
                                     <form action="{{ route('rekonbku.store') }}" method="POST">
                                         @csrf
@@ -38,7 +37,7 @@
                                     </form>
                                 </div>
                                 <hr>
-                                {{-- <div class="col-6">
+                                <div class="col-6">
                                     <form action="{{ route('rekonbku.belum') }}" method="POST">
                                         @csrf
                                         <button type="submit" class="mb-1 mt-1 me-1 btn btn-primary">
@@ -52,11 +51,15 @@
                                             Update Data Belum DiRekon ke Table
                                         </button>
                                     </form>
-                                </div> --}}
-                            </div>
-                        </section>
-
+                                </div>
+                        </div> --}}
                         <div class="card-body">
+                            <form action="{{ route('rekonbku.update') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="mb-1 mt-1 me-1 btn btn-info">
+                                    Update Data Sudah DiRekon ke DB
+                                </button>
+                            </form>
                             <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools" border="1" cellpadding="10" cellspacing="0">
                                 <thead>
                                     <tr>

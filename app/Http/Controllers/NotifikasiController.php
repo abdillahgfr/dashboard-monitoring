@@ -873,12 +873,17 @@ class NotifikasiController extends Controller
             ->get()
             ->keyBy('id_kolok');
 
-        $bpadinventoryData = DB::connection('sqlsrv_2')->table('so_data2025')
+        // Ambil semua data so_data2025 semester 1 (Januari-Juni), lalu ambil data dengan tanggal periodeba_fisik per kolok
+        $bpadinventoryRaw = DB::connection('sqlsrv_2')->table('so_data2025')
             ->whereYear('periode_baso', $tahun)
             ->whereIn(DB::raw('MONTH(periode_baso)'), range(1, 6))
-            ->select('kolok', 'smt', 'periode_baso', 'tglba_fisik', 'no_bafisik')
-            ->get()
-            ->keyBy('kolok');
+            ->select('kolok', 'smt', 'periode_baso', 'tglba_fisik', 'periodeba_fisik', 'no_bafisik')
+            ->orderBy('kolok')
+            ->orderByDesc('periodeba_fisik')
+            ->get();
+
+        // Group data per kolok, agar bisa akses semua periodeba_fisik per kolok
+        $bpadinventoryData = $bpadinventoryRaw->groupBy('kolok');
 
         // Ambil jumlah data rekon dari sqlsrv_3 (rekon_bku) berdasarkan tahun dan bulan <= bulan yang dipilih
         $rekonBku = DB::connection('sqlsrv_3')
@@ -898,14 +903,22 @@ class NotifikasiController extends Controller
             ->groupBy('id_kolok')
             ->pluck('jumlah_belum_rekon', 'id_kolok');
 
-        // Gabungkan semua data
+        // Gabungkan semua data, tampilkan semua periodeba_fisik per kolok (array)
         $mergedData = $bpadmasterData->map(function ($master) use ($bpadinventoryData, $rekonBku, $rekonBkuBelum) {
-            $inventory = $bpadinventoryData[$master->id_kolok] ?? null;
+            $inventories = $bpadinventoryData[$master->id_kolok] ?? collect();
 
-            $master->smt = $inventory->smt ?? 'No Data Found';
-            $master->periode_baso = $inventory->periode_baso ?? 'No Data Found';
-            $master->tglba_fisik = $inventory->tglba_fisik ?? 'No Data Found';
-            $master->no_bafisik = $inventory->no_bafisik ?? 'No Data Found';
+            // Ambil semua periodeba_fisik, tglba_fisik, no_bafisik dalam array
+            $master->all_periodeba_fisik = $inventories->pluck('periodeba_fisik')->all();
+            $master->all_periode_baso = $inventories->pluck('periode_baso')->all();
+            $master->all_tglba_fisik = $inventories->pluck('tglba_fisik')->all();
+            $master->all_no_bafisik = $inventories->pluck('no_bafisik')->all();
+
+            // Untuk keperluan lama, tetap isi satu data terakhir (jika ada)
+            $latest = $inventories->first();
+            $master->smt = $latest->smt ?? 'No Data Found';
+            $master->periode_baso = $latest->periode_baso ?? 'No Data Found';
+            $master->periodeba_fisik = $latest->periodeba_fisik ?? 'No Data Found';
+            $master->no_bafisik = $latest->no_bafisik ?? 'No Data Found';
 
             // Tambahkan jumlah rekon dari rekon_bku
             $master->jumlah_rekon = $rekonBku[$master->id_kolok] ?? 0;
@@ -1099,7 +1112,7 @@ class NotifikasiController extends Controller
             if ($item->upb_sekolah !== 'Y' && $item->flag_blud !== 'Y') {
                 if (
                     ($item->Total_SPPB_BAST == 0) &&
-                    ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
+                    ($item->periodeba_fisik !== 'No Data Found' && !is_null($item->periodeba_fisik)) &&
                     ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
                     ($jumlahBelumRekon == 0 && $jumlahRekon > 0 || $jumlahRekon == 0)
                 ) {
@@ -1111,7 +1124,7 @@ class NotifikasiController extends Controller
             if ($item->upb_sekolah == 'Y') {
                 if (
                     ($item->Total_SPPB_BAST == 0) &&
-                    ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
+                    ($item->periodeba_fisik !== 'No Data Found' && !is_null($item->periodeba_fisik)) &&
                     ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
                     ($jumlahBelumRekon == 0 && $jumlahRekon > 0 || $jumlahRekon == 0)
                 ) {
@@ -1123,7 +1136,7 @@ class NotifikasiController extends Controller
             if ($item->flag_blud == 'Y') {
                 if (
                     ($item->Total_SPPB_BAST == 0) &&
-                    ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
+                    ($item->periodeba_fisik !== 'No Data Found' && !is_null($item->periodeba_fisik)) &&
                     ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
                     ($jumlahBelumRekon == 0 && $jumlahRekon >= 0)
                 ) {
@@ -1171,12 +1184,17 @@ class NotifikasiController extends Controller
             ->get()
             ->keyBy('id_kolok');
 
-        $bpadinventoryData = DB::connection('sqlsrv_2')->table('so_data2025')
+        // Ambil semua data so_data2025 semester 1 (Januari-Juni), lalu ambil data dengan tanggal periodeba_fisik per kolok
+        $bpadinventoryRaw = DB::connection('sqlsrv_2')->table('so_data2025')
             ->whereYear('periode_baso', $tahun)
             ->whereIn(DB::raw('MONTH(periode_baso)'), range(7, 12))
-            ->select('kolok', 'smt', 'periode_baso', 'tglba_fisik', 'no_bafisik')
-            ->get()
-            ->keyBy('kolok');
+            ->select('kolok', 'smt', 'periode_baso', 'tglba_fisik', 'periodeba_fisik', 'no_bafisik')
+            ->orderBy('kolok')
+            ->orderByDesc('periodeba_fisik')
+            ->get();
+
+        // Group data per kolok, agar bisa akses semua periodeba_fisik per kolok
+        $bpadinventoryData = $bpadinventoryRaw->groupBy('kolok');
 
         // Ambil jumlah data rekon dari sqlsrv_3 (rekon_bku) berdasarkan tahun dan bulan <= bulan yang dipilih
         $rekonBku = DB::connection('sqlsrv_3')
@@ -1196,14 +1214,22 @@ class NotifikasiController extends Controller
             ->groupBy('id_kolok')
             ->pluck('jumlah_belum_rekon', 'id_kolok');
 
-        // Gabungkan semua data
+        // Gabungkan semua data, tampilkan semua periodeba_fisik per kolok (array)
         $mergedData = $bpadmasterData->map(function ($master) use ($bpadinventoryData, $rekonBku, $rekonBkuBelum) {
-            $inventory = $bpadinventoryData[$master->id_kolok] ?? null;
+            $inventories = $bpadinventoryData[$master->id_kolok] ?? collect();
 
-            $master->smt = $inventory->smt ?? 'No Data Found';
-            $master->periode_baso = $inventory->periode_baso ?? 'No Data Found';
-            $master->tglba_fisik = $inventory->tglba_fisik ?? 'No Data Found';
-            $master->no_bafisik = $inventory->no_bafisik ?? 'No Data Found';
+            // Ambil semua periodeba_fisik, tglba_fisik, no_bafisik dalam array
+            $master->all_periodeba_fisik = $inventories->pluck('periodeba_fisik')->all();
+            $master->all_periode_baso = $inventories->pluck('periode_baso')->all();
+            $master->all_tglba_fisik = $inventories->pluck('tglba_fisik')->all();
+            $master->all_no_bafisik = $inventories->pluck('no_bafisik')->all();
+
+            // Untuk keperluan lama, tetap isi satu data terakhir (jika ada)
+            $latest = $inventories->first();
+            $master->smt = $latest->smt ?? 'No Data Found';
+            $master->periode_baso = $latest->periode_baso ?? 'No Data Found';
+            $master->periodeba_fisik = $latest->periodeba_fisik ?? 'No Data Found';
+            $master->no_bafisik = $latest->no_bafisik ?? 'No Data Found';
 
             // Tambahkan jumlah rekon dari rekon_bku
             $master->jumlah_rekon = $rekonBku[$master->id_kolok] ?? 0;
@@ -1397,7 +1423,7 @@ class NotifikasiController extends Controller
             if ($item->upb_sekolah !== 'Y' && $item->flag_blud !== 'Y') {
                 if (
                     ($item->Total_SPPB_BAST == 0) &&
-                    ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
+                    ($item->periodeba_fisik !== 'No Data Found' && !is_null($item->periodeba_fisik)) &&
                     ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
                     ($jumlahBelumRekon == 0 && $jumlahRekon > 0 || $jumlahRekon == 0)
                 ) {
@@ -1409,7 +1435,7 @@ class NotifikasiController extends Controller
             if ($item->upb_sekolah == 'Y') {
                 if (
                     ($item->Total_SPPB_BAST == 0) &&
-                    ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
+                    ($item->periodeba_fisik !== 'No Data Found' && !is_null($item->periodeba_fisik)) &&
                     ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
                     ($jumlahBelumRekon == 0 && $jumlahRekon > 0 || $jumlahRekon == 0)
                 ) {
@@ -1421,7 +1447,7 @@ class NotifikasiController extends Controller
             if ($item->flag_blud == 'Y') {
                 if (
                     ($item->Total_SPPB_BAST == 0) &&
-                    ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
+                    ($item->periodeba_fisik !== 'No Data Found' && !is_null($item->periodeba_fisik)) &&
                     ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
                     ($jumlahBelumRekon == 0 && $jumlahRekon >= 0)
                 ) {

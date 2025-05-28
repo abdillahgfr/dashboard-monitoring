@@ -54,68 +54,34 @@
                                                     <td class="text-center">{{ $item->Total_SPPB_BAST }}</td>
                                                     <td>
                                                         @php
-                                                            $tgl = $item->periode_baso;
-                                                            $bulanTerisi = null;
-                                                            $belum = [];
-
-                                                            if (!empty($tgl) && $tgl !== 'No Data Found') {
-                                                                try {
-                                                                    $bulanTerisi = \Carbon\Carbon::createFromFormat('d-m-Y', $tgl)->format('n');
-                                                                } catch (\Exception $e) {
-                                                                    $bulanTerisi = null;
-                                                                }
-                                                            }
-
-                                                            // Cek bulan 7 (Juli) sampai 12 (Desember)
-                                                            foreach (range(7, 12) as $bulan) {
-                                                                if ((int)$bulanTerisi !== $bulan) {
-                                                                    $namaBulan = \Carbon\Carbon::create()->month($bulan)->locale('id')->translatedFormat('F');
-                                                                    $belum[] = $namaBulan;
-                                                                }
-                                                            }
+                                                            $bulanIndo = [7=>'Jul',8=>'Aug',9=>'Sep',10=>'Okt',11=>'Nov',12=>'Des'];
+                                                            $listPeriode = collect($item->all_periode_baso ?? []);
                                                         @endphp
 
-                                                        @if (count($belum) === 0)
-                                                            <span class="badge badge-success">Sudah (Juli - Desember)</span>
-                                                        @else
-                                                            @foreach ($belum as $b)
-                                                                <div>{{ $b }}: <span class="badge badge-danger">Belum</span></div>
-                                                            @endforeach
-                                                        @endif
+                                                        @foreach ($bulanIndo as $bulan => $nama)
+                                                            @php
+                                                                $match = $listPeriode->first(function ($tanggal) use ($bulan) {
+                                                                    return $tanggal && \Carbon\Carbon::parse($tanggal)->month === $bulan;
+                                                                });
+                                                            @endphp
+                                                            {!! $nama . ' : ' . ($match ? '<span style="color:green;">✅</span>' : '<span style="color:red;">❌</span>') !!}<br>
+                                                        @endforeach
                                                     </td>
-
                                                     <td>
                                                         @php
-                                                            $tgl = $item->tglba_fisik;
-                                                            $bulanTerisi = null;
-                                                            $belum = [];
-
-                                                            if (!empty($tgl) && $tgl !== 'No Data Found') {
-                                                                try {
-                                                                    $bulanTerisi = \Carbon\Carbon::createFromFormat('d-m-Y', $tgl)->format('n');
-                                                                } catch (\Exception $e) {
-                                                                    $bulanTerisi = null;
-                                                                }
-                                                            }
-
-                                                            // Cek bulan 7 (Juli) sampai 12 (Desember)
-                                                            foreach (range(7, 12) as $bulan) {
-                                                                if ((int)$bulanTerisi !== $bulan) {
-                                                                    $namaBulan = \Carbon\Carbon::create()->month($bulan)->locale('id')->translatedFormat('F');
-                                                                    $belum[] = $namaBulan;
-                                                                }
-                                                            }
+                                                            $bulanIndo = [7=>'Jul',8=>'Aug',9=>'Sep',10=>'Okt',11=>'Nov',12=>'Des'];
+                                                            $listPeriode = collect($item->all_periodeba_fisik ?? []);
                                                         @endphp
 
-                                                        @if (count($belum) === 0)
-                                                            <span class="badge badge-success">Sudah (Juli - Desember)</span>
-                                                        @else
-                                                            @foreach ($belum as $b)
-                                                                <div>{{ $b }}: <span class="badge badge-danger">Belum</span></div>
-                                                            @endforeach
-                                                        @endif
+                                                        @foreach ($bulanIndo as $bulan => $nama)
+                                                            @php
+                                                                $ada = $listPeriode->contains(function ($tanggal) use ($bulan) {
+                                                                    return $tanggal && \Carbon\Carbon::parse($tanggal)->month === $bulan;
+                                                                });
+                                                            @endphp
+                                                            {!! $nama . ' : ' . ($ada ? '<span style="color:green;">✅</span>' : '<span style="color:red;">❌</span>') !!}<br>
+                                                        @endforeach
                                                     </td>
-
                                                     <td class="text-center">
                                                         {{ $item->jumlah_rekon }}
                                                     </td>

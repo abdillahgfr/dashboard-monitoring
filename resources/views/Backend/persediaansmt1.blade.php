@@ -54,45 +54,33 @@
                                                     <td class="text-center">{{ $item->Total_SPPB_BAST }}</td>
                                                     <td>
                                                         @php
-                                                            $belum = [];
-
-                                                            foreach (range(1, 6) as $bulan) {
-                                                                $periode = $item->periode_baso[$bulan] ?? null;
-                                                                if (empty($periode)) {
-                                                                    $namaBulan = \Carbon\Carbon::create()->month($bulan)->locale('id')->translatedFormat('F');
-                                                                    $belum[] = $namaBulan;
-                                                                }
-                                                            }
+                                                            $bulanIndo = [1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',5=>'Mei',6=>'Jun'];
+                                                            $listPeriode = collect($item->all_periode_baso ?? []);
                                                         @endphp
 
-                                                        @if (count($belum) === 0)
-                                                            <span class="badge badge-success">Sudah (Januari - Juni)</span>
-                                                        @else
-                                                            @foreach ($belum as $b)
-                                                                <div>{{ $b }}: <span class="badge badge-danger">Belum</span></div>
-                                                            @endforeach
-                                                        @endif
+                                                        @foreach ($bulanIndo as $bulan => $nama)
+                                                            @php
+                                                                $match = $listPeriode->first(function ($tanggal) use ($bulan) {
+                                                                    return $tanggal && \Carbon\Carbon::parse($tanggal)->month === $bulan;
+                                                                });
+                                                            @endphp
+                                                            {!! $nama . ' : ' . ($match ? '<span style="color:green;">✅</span>' : '<span style="color:red;">❌</span>') !!}<br>
+                                                        @endforeach
                                                     </td>
                                                     <td>
                                                         @php
-                                                            $belum = [];
-
-                                                            foreach (range(1, 6) as $bulan) {
-                                                                $periode = $item->tglba_fisik[$bulan] ?? null;
-                                                                if (empty($periode)) {
-                                                                    $namaBulan = \Carbon\Carbon::create()->month($bulan)->locale('id')->translatedFormat('F');
-                                                                    $belum[] = $namaBulan;
-                                                                }
-                                                            }
+                                                            $bulanIndo = [1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',5=>'Mei',6=>'Jun'];
+                                                            $listPeriode = collect($item->all_periodeba_fisik ?? []);
                                                         @endphp
 
-                                                        @if (count($belum) === 0)
-                                                            <span class="badge badge-success">Sudah (Januari - Juni)</span>
-                                                        @else
-                                                            @foreach ($belum as $b)
-                                                                <div>{{ $b }}: <span class="badge badge-danger">Belum</span></div>
-                                                            @endforeach
-                                                        @endif
+                                                        @foreach ($bulanIndo as $bulan => $nama)
+                                                            @php
+                                                                $ada = $listPeriode->contains(function ($tanggal) use ($bulan) {
+                                                                    return $tanggal && \Carbon\Carbon::parse($tanggal)->month === $bulan;
+                                                                });
+                                                            @endphp
+                                                            {!! $nama . ' : ' . ($ada ? '<span style="color:green;">✅</span>' : '<span style="color:red;">❌</span>') !!}<br>
+                                                        @endforeach
                                                     </td>
                                                     <td class="text-center">
                                                         {{ $item->jumlah_rekon }}

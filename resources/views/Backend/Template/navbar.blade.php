@@ -80,60 +80,64 @@
                             <span>Home</span>
                         </a>
                     </li>
-                    <li class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">
-                        <a class="nav-link {{ request()->routeIs('home') ? 'nav-link-active' : '' }}"
-                            href="{{ route('home') }}">
-                            <i class="bx bx-window-alt" aria-hidden="true"></i>
-                            <span>Dashboard Persediaan</span>
-                        </a>
-                    </li>
-                    <li class="nav-parent {{ request()->is('persediaanpdopd') || request()->is('persediaansekolah') || request()->is('persediaanblud') ? 'nav-active nav-expanded' : '' }}">
+                    <li class="nav-parent {{ request()->routeIs('home') || request()->routeIs('api') || request()->routeIs('persediaansmt1') || request()->routeIs('persediaansmt2') || request()->is('persediaanpdopd') || request()->is('persediaansekolah') || request()->is('persediaanblud') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">
-                            <i class="bx bx-cube" aria-hidden="true"></i>
-                            <span>Persediaan Detail</span>
+                            <i class="bx bx-detail" aria-hidden="true"></i>
+                            <span>Persediaan</span>
                         </a>
                         <ul class="nav nav-children">
-                            <li class="{{ request()->is('persediaanpdopd') ? 'nav-active' : '' }}">
-                                <a class="nav-link {{ request()->is('persediaanpdopd') ? 'nav-link-active' : '' }}" href="/persediaanpdopd">
-                                    <span>PD/OPD</span>
+                            <li class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">
+                                <a class="nav-link {{ request()->routeIs('home') ? 'nav-link-active' : '' }}"
+                                    href="{{ route('home') }}">
+                                    <span>Dashboard Persediaan</span>
                                 </a>
                             </li>
-                            <li class="{{ request()->is('persediaansekolah') ? 'nav-active' : '' }}">
-                                <a class="nav-link {{ request()->is('persediaansekolah') ? 'nav-link-active' : '' }}" href="/persediaansekolah">
-                                    <span>SEKOLAH</span>
+                            <li class="nav-parent {{ request()->is('persediaanpdopd') || request()->is('persediaansekolah') || request()->is('persediaanblud') ? 'nav-active nav-expanded' : '' }}">
+                                <a class="nav-link" href="#">
+                                    <span>Persediaan Detail</span>
                                 </a>
+                                <ul class="nav nav-children">
+                                    <li class="{{ request()->is('persediaanpdopd') ? 'nav-active' : '' }}">
+                                        <a class="nav-link {{ request()->is('persediaanpdopd') ? 'nav-link-active' : '' }}" href="/persediaanpdopd">
+                                            <span>PD/OPD</span>
+                                        </a>
+                                    </li>
+                                    <li class="{{ request()->is('persediaansekolah') ? 'nav-active' : '' }}">
+                                        <a class="nav-link {{ request()->is('persediaansekolah') ? 'nav-link-active' : '' }}" href="/persediaansekolah">
+                                            <span>SEKOLAH</span>
+                                        </a>
+                                    </li>
+                                    <li class="{{ request()->is('persediaanblud') ? 'nav-active' : '' }}">
+                                        <a class="nav-link {{ request()->is('persediaanblud') ? 'nav-link-active' : '' }}" href="/persediaanblud">
+                                            <span>BLUD</span>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li class="{{ request()->is('persediaanblud') ? 'nav-active' : '' }}">
-                                <a class="nav-link {{ request()->is('persediaanblud') ? 'nav-link-active' : '' }}" href="/persediaanblud">
-                                    <span>BLUD</span>
+                            <li class="nav-parent {{ request()->routeIs('persediaansmt1') || request()->routeIs('persediaansmt2') ? 'nav-active nav-expanded' : '' }}">
+                                <a class="nav-link" href="#">
+                                    <span>Monitoring Semesteran</span>
+                                </a>
+                                <ul class="nav nav-children">
+                                    <li class="{{ request()->routeIs('persediaansmt1') ? 'nav-active' : '' }}">
+                                        <a class="nav-link {{ request()->routeIs('persediaansmt1') ? 'nav-link-active' : '' }}" href="{{ route('persediaansmt1') }}">
+                                            <span>Laporan Semester 1</span>
+                                        </a>
+                                    </li>
+                                    <li class="{{ request()->routeIs('persediaansmt2') ? 'nav-active' : '' }}">
+                                        <a class="nav-link {{ request()->routeIs('persediaansmt2') ? 'nav-link-active' : '' }}" href="{{ route('persediaansmt2') }}">
+                                            <span>Laporan Semester 2</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="{{ request()->routeIs('api') ? 'nav-active' : '' }}">
+                                <a class="nav-link {{ request()->routeIs('api') ? 'nav-link-active' : '' }}"
+                                    href="{{ route('api') }}">
+                                    <span>Data Rekon BKU (API)</span>
                                 </a>
                             </li>
                         </ul>
-                    </li>
-                    <li class="nav-parent {{ request()->routeIs('persediaansmt1') || request()->routeIs('persediaansmt2') ? 'nav-active nav-expanded' : '' }}">
-                        <a class="nav-link" href="#">
-                            <i class="bx bx-layout" aria-hidden="true"></i>
-                            <span>Monitoring Semesteran</span>
-                        </a>
-                        <ul class="nav nav-children">
-                            <li class="{{ request()->routeIs('persediaansmt1') ? 'nav-active' : '' }}">
-                                <a class="nav-link {{ request()->routeIs('persediaansmt1') ? 'nav-link-active' : '' }}" href="{{ route('persediaansmt1') }}">
-                                    <span>Laporan Semester 1</span>
-                                </a>
-                            </li>
-                            <li class="{{ request()->routeIs('persediaansmt2') ? 'nav-active' : '' }}">
-                                <a class="nav-link {{ request()->routeIs('persediaansmt2') ? 'nav-link-active' : '' }}" href="{{ route('persediaansmt2') }}">
-                                    <span>Laporan Semester 2</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="{{ request()->routeIs('api') ? 'nav-active' : '' }}">
-                        <a class="nav-link {{ request()->routeIs('api') ? 'nav-link-active' : '' }}"
-                            href="{{ route('api') }}">
-                            <i class="bx bx-file" aria-hidden="true"></i>
-                            <span>Data Rekon BKU (API)</span>
-                        </a>
                     </li>
                 </ul>
             </nav>
