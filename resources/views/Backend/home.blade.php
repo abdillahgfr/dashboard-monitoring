@@ -11,17 +11,17 @@
             <!-- start: page -->
             <div class="row">
                 <form method="GET" action="{{ url()->current() }}" class="mb-3">
-                        <div class="form-group">
-                            <label for="bulan">Pilih Bulan:</label>
-                            <select name="bulan" id="bulan" class="form-control" onchange="this.form.submit()">
-                                @foreach(range(1,12) as $num)
-                                    <option value="{{ $num }}" {{ $bulan == $num ? 'selected' : '' }}>
-                                        {{ \Carbon\Carbon::create()->month($num)->locale('id')->monthName }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </form>
+                    <div class="form-group">
+                        <label for="bulan">Pilih Bulan:</label>
+                        <select name="bulan" id="bulan" class="form-control" onchange="this.form.submit()">
+                            @foreach(range(1,12) as $num)
+                                <option value="{{ $num }}" {{ $bulan == $num ? 'selected' : '' }}>
+                                    {{ \Carbon\Carbon::create()->month($num)->locale('id')->monthName }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </form>
                 <div class="col-xl-4">
                     <section class="card card-primary mb-4">
                         <div class="col-lg-12">
@@ -169,6 +169,14 @@
                                     <p class="card-subtitle">Progress Seluruh Wilayah</p>
                                 </header>
                                 <div class="card-body">
+                                    {{-- @if (!empty($user->kolok))
+                                        <div class="alert alert-info mb-3">
+                                            Menampilkan data hanya untuk KOLOK: <strong>{{ $user->kolok }}</strong>
+                                        </div>
+                                        @php
+                                            $mergedData = $mergedData->where('id_kolok', $user->kolok);
+                                        @endphp
+                                    @endif --}}
                                     <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools">
                                         <thead>
                                             <tr>

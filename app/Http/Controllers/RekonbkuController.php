@@ -186,7 +186,7 @@ class RekonbkuController extends Controller
                                 'id_kolok'       => $skpd->id_kolok,
                                 'nalok'          => $skpd->nalok,
                                 'idskpd'         => $item['KODE_SKPD'] ?? '',
-                                'tgl_post'       => Carbon::now(),
+                                'tgl_post'       => $item['D_POSTING'] ?? '',
                                 'kode_rekening'  => $kodeAkun,
                                 'realisasi'      => $realisasi,
                                 'status_rekon'   => 'Sudah Direkon',
@@ -203,7 +203,10 @@ class RekonbkuController extends Controller
             }
         }
 
-        DB::connection('sqlsrv_3')->table("rekon_bku")->insert($insertData);
+        foreach (array_chunk($insertData, 100) as $chunk) {
+            DB::connection('sqlsrv_3')->table("rekon_bku")->insert($chunk); // BENAR!
+        }
+
 
         return redirect()->with('success', count($insertData) . " data sudah direkon berhasil diupdate.");
     }
@@ -387,7 +390,7 @@ class RekonbkuController extends Controller
                                 'id_kolok'       => $skpd->id_kolok,
                                 'nalok'          => $skpd->nalok,
                                 'idskpd'         => $item['KODE_SKPD'] ?? '',
-                                'tgl_post'       => Carbon::now(),
+                                'tgl_post'       => $item['D_POSTING'] ?? '',
                                 'kode_rekening'  => $kodeAkun,
                                 'realisasi'      => $realisasi,
                                 'status_rekon'   => 'Belum Direkon',
@@ -402,7 +405,7 @@ class RekonbkuController extends Controller
             }
         }
 
-       foreach (array_chunk($insertData, 200) as $chunk) {
+       foreach (array_chunk($insertData, 100) as $chunk) {
             DB::connection('sqlsrv_3')->table("rekon_bku_belum")->insert($chunk);
         }
 

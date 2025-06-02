@@ -60,6 +60,12 @@
                                     Update Data Sudah DiRekon ke DB
                                 </button>
                             </form>
+                            <form action="{{ route('rekonbku.updatebelum') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="mb-1 mt-1 me-1 btn btn-primary">
+                                    Update Data Belum DiRekon ke Table
+                                </button>
+                            </form>
                             <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools" border="1" cellpadding="10" cellspacing="0">
                                 <thead>
                                     <tr>
