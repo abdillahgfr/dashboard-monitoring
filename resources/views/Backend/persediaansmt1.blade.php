@@ -22,6 +22,14 @@
                                     <p class="card-subtitle">Progress Seluruh Wilayah</p>
                                 </header>
                                 <div class="card-body">
+                                    @if (!empty($user->kolok))
+                                        <div class="alert alert-info mb-3">
+                                            Menampilkan data hanya untuk KOLOK: <strong>{{ $user->kolok }}</strong>
+                                        </div>
+                                        @php
+                                            $mergedData = $mergedData->where('id_kolok', $user->kolok);
+                                        @endphp
+                                    @endif
                                     <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools">
                                         <thead>
                                             <tr>
@@ -83,11 +91,11 @@
                                                         @endforeach
                                                     </td>
                                                     <td class="text-center">
-                                                        {{ $item->jumlah_rekon }}
+                                                        {{ $item->rekon_sudah }}
                                                     </td>
 
                                                     <td class="text-center">
-                                                        {{ $item->jumlah_belum_rekon }}
+                                                        {{ $item->rekon_belum }}
                                                     </td>
                                                 </tr>
                                             @endforeach

@@ -32,7 +32,7 @@
                                         <a href="#" class="card-action card-action-dismiss" data-card-dismiss></a>
                                     </div>
                                     <h2 class="card-title">Chart Monitoring Persediaan</h2>
-                                    <p class="card-subtitle">Progress PD/OPD
+                                    <p class="card-subtitle">Progress Seluruh PD/OPD
                                         {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</p>
                                 </header>
                                 <section class="card card-modern card-big-info">
@@ -75,7 +75,7 @@
                                     </div>
 
                                     <h2 class="card-title">Chart Monitoring Persediaan</h2>
-                                    <p class="card-subtitle">Progress SEKOLAH
+                                    <p class="card-subtitle">Progress Seluruh SEKOLAH
                                         {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</p>
                                 </header>
                                 <section class="card card-modern card-big-info">
@@ -118,7 +118,7 @@
                                     </div>
 
                                     <h2 class="card-title">Chart Monitoring Persediaan</h2>
-                                    <p class="card-subtitle">Progress BLUD
+                                    <p class="card-subtitle">Progress Seluruh BLUD
                                         {{ \Carbon\Carbon::create()->month($bulan)->locale('id')->monthName }}</p>
                                 </header>
                                 <section class="card card-modern card-big-info">
@@ -169,14 +169,14 @@
                                     <p class="card-subtitle">Progress Seluruh Wilayah</p>
                                 </header>
                                 <div class="card-body">
-                                    {{-- @if (!empty($user->kolok))
+                                    @if (!empty($user->kolok))
                                         <div class="alert alert-info mb-3">
                                             Menampilkan data hanya untuk KOLOK: <strong>{{ $user->kolok }}</strong>
                                         </div>
                                         @php
                                             $mergedData = $mergedData->where('id_kolok', $user->kolok);
                                         @endphp
-                                    @endif --}}
+                                    @endif
                                     <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools">
                                         <thead>
                                             <tr>
@@ -187,6 +187,7 @@
                                                 <th>Notifikasi</th>
                                                 <th>Stok Opname</th>
                                                 <th>BA Stok Fisik</th>
+                                                <th>Ket</th>
                                                 <th>Rekon BKU(Selesai)</th>
                                                 <th>Rekon BKU(Belum)</th>
                                                 <th>Progress</th>
@@ -236,19 +237,22 @@
                                                             <span class="badge badge-success">Sudah</span>
                                                         @endif
                                                     </td>
+
+                                                    <td class="text-center">
+                                                        {{ $item->so_ket }}
+                                                    </td>
                                                         
                                                     <td class="text-center">
-                                                        {{ $item->jumlah_rekon }}
+                                                        {{ $item->rekon_sudah }}
                                                     </td>
 
                                                     <td class="text-center">
-                                                        {{ $item->jumlah_belum_rekon }}
+                                                        {{ $item->rekon_belum }}
                                                     </td>
                                                     <td>
                                                         @php
-                                                            // Status Rekon BKU berdasarkan jumlah rekonsiliasi
-                                                            $jumlahRekon = $item->jumlah_rekon ?? 0;
-                                                            $jumlahBelumRekon = $item->jumlah_belum_rekon ?? 0;
+                                                            $jumlahRekonSudah = $item->rekon_sudah ?? 0;
+                                                            $jumlahRekonBelum = $item->rekon_belum ?? 0;
 
                                                             $conditionsMet = 0;
 
@@ -262,8 +266,8 @@
                                                                 $conditionsMet++;
                                                             }
 
-                                                            // Kondisi keempat: jika belum_rekon = 0 maka dianggap selesai
-                                                            if ($jumlahBelumRekon == 0 && $jumlahRekon >= 0 ) {
+                                                            // Kondisi keempat: jika belum direkon = 0, maka dianggap selesai
+                                                            if ($jumlahRekonBelum == 0) {
                                                                 $conditionsMet++;
                                                             }
 

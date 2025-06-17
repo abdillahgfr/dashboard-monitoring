@@ -54,16 +54,10 @@
                                 </div>
                         </div> --}}
                         <div class="card-body">
-                            <form action="{{ route('rekonbku.update') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="mb-1 mt-1 me-1 btn btn-info">
-                                    Update Data Sudah DiRekon ke DB
-                                </button>
-                            </form>
-                            <form action="{{ route('rekonbku.updatebelum') }}" method="POST">
+                             <form action="{{ route('rekonbku.store') }}" method="POST">
                                 @csrf
                                 <button type="submit" class="mb-1 mt-1 me-1 btn btn-primary">
-                                    Update Data Belum DiRekon ke Table
+                                    Insert Data Rekon BKU
                                 </button>
                             </form>
                             <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools" border="1" cellpadding="10" cellspacing="0">

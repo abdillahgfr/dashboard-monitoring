@@ -59,43 +59,45 @@ class HomeController extends Controller
         $bpadinventoryData = DB::connection('sqlsrv_2')->table('so_data2025')
             ->whereYear('periode_baso', $tahun)
             ->whereMonth('periode_baso', $bulan)
-            ->select('kolok', 'smt', 'periode_baso', 'tglba_fisik', 'no_bafisik')
+            ->select('kolok', 'smt', 'periode_baso', 'tglba_fisik', 'no_bafisik', 'so_ket')
             ->get()
             ->keyBy('kolok');
 
 
         // Ambil jumlah data rekon dari sqlsrv_3 (rekon_bku) berdasarkan tahun dan bulan <= bulan yang dipilih
-        $rekonBku = DB::connection('sqlsrv_3')
+        // Sudah Direkon
+        $rekonBkuSudah = DB::connection('sqlsrv_3')
             ->table('rekon_bku')
-            ->select('id_kolok', DB::raw('COUNT(*) as jumlah_rekon'))
+            ->select('id_kolok', DB::raw('COUNT(*) as jumlah'))
             ->whereYear('tgl_post', $tahun)
             ->whereBetween(DB::raw('MONTH(tgl_post)'), [1, $bulan])
+            ->where('status_rekon', 'Sudah Direkon')
             ->groupBy('id_kolok')
-            ->pluck('jumlah_rekon', 'id_kolok');
+            ->pluck('jumlah', 'id_kolok');
 
-        // Ambil jumlah data belum direkon dari sqlsrv_3 (rekon_bku_belum) berdasarkan tahun dan bulan <= bulan yang dipilih
+        // Belum Direkon
         $rekonBkuBelum = DB::connection('sqlsrv_3')
-            ->table('rekon_bku_belum')
-            ->select('id_kolok', DB::raw('COUNT(*) as jumlah_belum_rekon'))
+            ->table('rekon_bku')
+            ->select('id_kolok', DB::raw('COUNT(*) as jumlah'))
             ->whereYear('tgl_post', $tahun)
             ->whereBetween(DB::raw('MONTH(tgl_post)'), [1, $bulan])
+            ->where('status_rekon', 'Belum Direkon')
             ->groupBy('id_kolok')
-            ->pluck('jumlah_belum_rekon', 'id_kolok');
+            ->pluck('jumlah', 'id_kolok');
+
 
         // Gabungkan semua data
-        $mergedData = $bpadmasterData->map(function ($master) use ($bpadinventoryData, $rekonBku, $rekonBkuBelum) {
+        $mergedData = $bpadmasterData->map(function ($master) use ($bpadinventoryData, $rekonBkuSudah, $rekonBkuBelum) {
             $inventory = $bpadinventoryData[$master->id_kolok] ?? null;
 
             $master->smt = $inventory->smt ?? 'No Data Found';
             $master->periode_baso = $inventory->periode_baso ?? 'No Data Found';
             $master->tglba_fisik = $inventory->tglba_fisik ?? 'No Data Found';
             $master->no_bafisik = $inventory->no_bafisik ?? 'No Data Found';
+            $master->so_ket = $inventory->so_ket ?? 'No Data Found';
 
             // Tambahkan jumlah rekon dari rekon_bku
             $master->jumlah_rekon = $rekonBku[$master->id_kolok] ?? 0;
-
-            // Tambahkan jumlah belum rekon dari rekon_bku_belum
-            $master->jumlah_belum_rekon = $rekonBkuBelum[$master->id_kolok] ?? 0;
 
             return $master;
         });
@@ -125,31 +127,32 @@ class HomeController extends Controller
             $sppb[$i] = $countBy('sqlsrv_2', 'rq_data2025', 'idskpd', [
                 $filter,
                 ['YEAR(tgl_rq) = ?', [$tahun]],
-                ['MONTH(tgl_rq) = ?', [$bulan]],
+                ['MONTH(tgl_rq) BETWEEN ? AND ?', [1, $bulan]], 
                 ["(stat_rq IS NULL OR stat_rq = '')"],
                 ["sts = 1"]
             ]);
-            $bastSPPB[$i] = $countBy('sqlsrv_2', 'rq_data2025', 'idskpd', [
+           $bastSPPB[$i] = $countBy('sqlsrv_2', 'rq_data2025', 'idskpd', [
                 $filter,
                 ['YEAR(tgl_rq) = ?', [$tahun]],
-                ['MONTH(tgl_rq) = ?', [$bulan]],
+                ['MONTH(tgl_rq) BETWEEN ? AND ?', [1, $bulan]],
                 ["stat_rq = 1 AND stat_form IS NULL"],
                 ["sts = 1"]
             ]);
+
         }
 
         // BASTPHK3, BASTHIBAH
         $bastPHK3 = $countBy('sqlsrv_2', 'bast_data2025', 'kolok', [
             ["tipe_bast = 1"],
             ['YEAR(tgl_bast) = ?', [$tahun]],
-            ['MONTH(tgl_bast) = ?', [$bulan]],
+            ['MONTH(tgl_bast) BETWEEN ? AND ?', [1, $bulan]],
             ["(stat_bast IS NULL OR stat_bast = '')"],
             ["sts = 1"]
         ]);
         $bastHIBAH = $countBy('sqlsrv_2', 'bast_data2025', 'kolok', [
             ["tipe_bast = 2"],
             ['YEAR(tgl_bast) = ?', [$tahun]],
-            ['MONTH(tgl_bast) = ?', [$bulan]],
+            ['MONTH(tgl_bast) BETWEEN ? AND ?', [1, $bulan]],
             ["(stat_bast IS NULL OR stat_bast = '')"],
             ["sts = 1"]
         ]);
@@ -158,7 +161,7 @@ class HomeController extends Controller
         $bastTRANSFER = $countBy('sqlsrv_2', 'rq_data2025', 'idkolok', [
             ["SUBSTRING(noref, 10, 3) = '2.6'"],
             ['YEAR(tgl_rq) = ?', [$tahun]],
-            ['MONTH(tgl_rq) = ?', [$bulan]],
+            ['MONTH(tgl_rq) BETWEEN ? AND ?', [1, $bulan]],
             ["stat_rq = 1 AND stat_form IS NULL"],
             ["sts = 1"]
         ]);
@@ -167,42 +170,42 @@ class HomeController extends Controller
         $reviewTambah = $countBy('sqlsrv_2', 'bast_data2025', 'kolok', [
             ["tipe_bast = 7"],
             ['YEAR(tgl_bast) = ?', [$tahun]],
-            ['MONTH(tgl_bast) = ?', [$bulan]],
+            ['MONTH(tgl_bast) BETWEEN ? AND ?', [1, $bulan]],
             ["(stat_bast IS NULL OR stat_bast = '')"],
             ["sts = 1"]
         ]);
         $instTambah = $countBy('sqlsrv_2', 'bast_data2025', 'kolok', [
             ["tipe_bast = 5"],
             ['YEAR(tgl_bast) = ?', [$tahun]],
-            ['MONTH(tgl_bast) = ?', [$bulan]],
+            ['MONTH(tgl_bast) BETWEEN ? AND ?', [1, $bulan]],
             ["(stat_bast IS NULL OR stat_bast = '')"],
             ["sts = 1"]
         ]);
         $auditTambah = $countBy('sqlsrv_2', 'bast_data2025', 'kolok', [
             ["tipe_bast = 6"],
             ['YEAR(tgl_bast) = ?', [$tahun]],
-            ['MONTH(tgl_bast) = ?', [$bulan]],
+            ['MONTH(tgl_bast) BETWEEN ? AND ?', [1, $bulan]],
             ["(stat_bast IS NULL OR stat_bast = '')"],
             ["sts = 1"]
         ]);
         $reviewKurang = $countBy('sqlsrv_2', 'rq_data2025', 'idkolok', [
             ["SUBSTRING(noref, 10, 3) = '4.6'"],
             ['YEAR(tgl_rq) = ?', [$tahun]],
-            ['MONTH(tgl_rq) = ?', [$bulan]],
+            ['MONTH(tgl_rq) BETWEEN ? AND ?', [1, $bulan]],
             ["stat_rq = 1 AND stat_form IS NULL"],
             ["sts = 1"]
         ]);
         $insKurang = $countBy('sqlsrv_2', 'rq_data2025', 'idkolok', [
             ["SUBSTRING(noref, 10, 3) = '4.2'"],
             ['YEAR(tgl_rq) = ?', [$tahun]],
-            ['MONTH(tgl_rq) = ?', [$bulan]],
+            ['MONTH(tgl_rq) BETWEEN ? AND ?', [1, $bulan]],
             ["stat_rq = 1 AND stat_form IS NULL"],
             ["sts = 1"]
         ]);
         $auditKurang = $countBy('sqlsrv_2', 'rq_data2025', 'idkolok', [
             ["SUBSTRING(noref, 10, 3) = '4.4'"],
             ['YEAR(tgl_rq) = ?', [$tahun]],
-            ['MONTH(tgl_rq) = ?', [$bulan]],
+            ['MONTH(tgl_rq) BETWEEN ? AND ?', [1, $bulan]],
             ["stat_rq = 1 AND stat_form IS NULL"],
             ["sts = 1"]
         ]);
@@ -277,39 +280,43 @@ class HomeController extends Controller
         // Hitung selesai/belum
         $selesaiCount = $belumCount = $sekolahSudah = $sekolahBelum = $bludSudah = $bludBelum = 0;
         foreach ($mergedData as $item) {
-            $jumlahRekon = $item->jumlah_rekon ?? 0;
-            $jumlahBelumRekon = $item->jumlah_belum_rekon ?? 0;
+            $item->rekon_sudah = $rekonBkuSudah[$item->id_kolok] ?? 0;
+            $item->rekon_belum = $rekonBkuBelum[$item->id_kolok] ?? 0;
+
+            $hasRekon = ($item->rekon_sudah > 0 || $item->rekon_sudah == 0 || $item->rekon_belum == 0);
 
             if ($item->upb_sekolah !== 'Y' && $item->flag_blud !== 'Y') {
                 if (
                     ($item->Total_SPPB_BAST == 0) &&
                     ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
                     ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
-                    ($jumlahBelumRekon == 0 && $jumlahRekon > 0 || $jumlahRekon == 0)
+                    $hasRekon
                 ) {
                     $selesaiCount++;
                 } else {
                     $belumCount++;
                 }
             }
+
             if ($item->upb_sekolah == 'Y') {
                 if (
                     ($item->Total_SPPB_BAST == 0) &&
                     ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
                     ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
-                    ($jumlahBelumRekon == 0 && $jumlahRekon > 0 || $jumlahRekon == 0)
+                    $hasRekon
                 ) {
                     $sekolahSudah++;
                 } else {
                     $sekolahBelum++;
                 }
             }
+
             if ($item->flag_blud == 'Y') {
                 if (
                     ($item->Total_SPPB_BAST == 0) &&
                     ($item->tglba_fisik !== 'No Data Found' && !is_null($item->tglba_fisik)) &&
                     ($item->periode_baso !== 'No Data Found' && !is_null($item->periode_baso)) &&
-                    ($jumlahBelumRekon == 0 && $jumlahRekon >= 0)
+                    $hasRekon
                 ) {
                     $bludSudah++;
                 } else {
@@ -317,6 +324,7 @@ class HomeController extends Controller
                 }
             }
         }
+
 
         return view('Backend.home', [
             'mergedData' => $mergedData,

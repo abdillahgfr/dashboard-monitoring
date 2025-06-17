@@ -78,17 +78,16 @@
                                                 </td>
                                                 <td>{{ $item->no_bafisik ?? 'No BA Fisik Found' }}</td>
                                                 <td class="text-center">
-                                                        {{ $item->jumlah_rekon }}
-                                                    </td>
+                                                    {{ $item->rekon_sudah }}
+                                                </td>
 
-                                                    <td class="text-center">
-                                                        {{ $item->jumlah_belum_rekon }}
-                                                    </td>
+                                                <td class="text-center">
+                                                    {{ $item->rekon_belum }}
+                                                </td>
                                                 <td>
                                                     @php
-                                                        // Status Rekon BKU berdasarkan jumlah rekonsiliasi
-                                                        $jumlahRekon = $item->jumlah_rekon ?? 0;
-                                                        $jumlahBelumRekon = $item->jumlah_belum_rekon ?? 0;
+                                                        $jumlahRekonSudah = $item->rekon_sudah ?? 0;
+                                                        $jumlahRekonBelum = $item->rekon_belum ?? 0;
 
                                                         $conditionsMet = 0;
 
@@ -102,8 +101,8 @@
                                                             $conditionsMet++;
                                                         }
 
-                                                        // Kondisi keempat: jika belum_rekon = 0 maka dianggap selesai
-                                                        if ($jumlahBelumRekon == 0 && $jumlahRekon >= 0) {
+                                                        // Kondisi keempat: jika belum direkon = 0, maka dianggap selesai
+                                                        if ($jumlahRekonBelum == 0) {
                                                             $conditionsMet++;
                                                         }
 
