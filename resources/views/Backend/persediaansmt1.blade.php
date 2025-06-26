@@ -22,13 +22,21 @@
                                     <p class="card-subtitle">Progress Seluruh Wilayah</p>
                                 </header>
                                 <div class="card-body">
-                                    @if (!empty($user->kolok))
+                                    @php
+                                        $nrk = $user->nrk_emp ?? '';
+                                    @endphp
+
+                                    @if ($nrk == '' && !empty($user->kolok))
                                         <div class="alert alert-info mb-3">
                                             Menampilkan data hanya untuk KOLOK: <strong>{{ $user->kolok }}</strong>
                                         </div>
                                         @php
                                             $mergedData = $mergedData->where('id_kolok', $user->kolok);
                                         @endphp
+                                    @else
+                                        <div class="alert alert-success mb-3">
+                                            Menampilkan seluruh data (Akses NRK: {{ $nrk }})
+                                        </div>
                                     @endif
                                     <table class="table table-responsive-md table-striped mb-0" id="datatable-tabletools">
                                         <thead>

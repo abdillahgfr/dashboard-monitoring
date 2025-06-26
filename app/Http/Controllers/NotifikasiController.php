@@ -20,10 +20,10 @@ class NotifikasiController extends Controller
         // Set tahun dan bulan, gunakan variabel agar mudah diubah
         $tahun = 2025;
         // Ambil bulan dari request, default ke 4 (April) jika tidak ada
-        $bulan = request('bulan', 4);
+        $bulan = request('bulan', 1);
         // Validasi agar hanya 1-12 yang diterima
         if (!in_array((int)$bulan, range(1, 12))) {
-            $bulan = 4;
+            $bulan = 1;
         }
 
         $bpadmasterData = DB::connection('sqlsrv')->table('master_profile')
@@ -311,10 +311,10 @@ class NotifikasiController extends Controller
         // Set tahun dan bulan, gunakan variabel agar mudah diubah
         $tahun = 2025;
         // Ambil bulan dari request, default ke 4 (April) jika tidak ada
-        $bulan = request('bulan', 4);
+        $bulan = request('bulan', 1);
         // Validasi agar hanya 1-12 yang diterima
         if (!in_array((int)$bulan, range(1, 12))) {
-            $bulan = 4;
+            $bulan = 1;
         }
 
         // Ambil master data dan inventory data sekaligus, hanya kolom yang diperlukan
@@ -592,10 +592,10 @@ class NotifikasiController extends Controller
         // Set tahun dan bulan, gunakan variabel agar mudah diubah
         $tahun = 2025;
         // Ambil bulan dari request, default ke 4 (April) jika tidak ada
-        $bulan = request('bulan', 4);
+        $bulan = request('bulan', 1);
         // Validasi agar hanya 1-12 yang diterima
         if (!in_array((int)$bulan, range(1, 12))) {
-            $bulan = 4;
+            $bulan = 1;
         }
 
         // Ambil master data dan inventory data sekaligus, hanya kolom yang diperlukan
